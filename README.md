@@ -1,4 +1,4 @@
 Budget
 ======
 
-A custom built bidget application in C#
+A custom built budget application in C#

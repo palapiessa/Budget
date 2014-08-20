@@ -40,6 +40,8 @@
             this.nudInterest = new System.Windows.Forms.NumericUpDown();
             this.nudBalance = new System.Windows.Forms.NumericUpDown();
             this.lblStatus = new System.Windows.Forms.Label();
+            this.addExpenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addBudgetCatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudInterest)).BeginInit();
@@ -50,7 +52,9 @@
             // 
             this.mnuMain.BackColor = System.Drawing.SystemColors.ControlDark;
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuToolStripMenuItem});
+            this.menuToolStripMenuItem,
+            this.addExpenseToolStripMenuItem,
+            this.addBudgetCatToolStripMenuItem});
             this.mnuMain.Location = new System.Drawing.Point(0, 0);
             this.mnuMain.Name = "mnuMain";
             this.mnuMain.Size = new System.Drawing.Size(550, 24);
@@ -194,6 +198,11 @@
             // 
             this.nudInterest.DecimalPlaces = 2;
             this.nudInterest.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nudInterest.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
             this.nudInterest.Location = new System.Drawing.Point(168, 193);
             this.nudInterest.Maximum = new decimal(new int[] {
             1000000,
@@ -213,6 +222,11 @@
             // 
             this.nudBalance.DecimalPlaces = 2;
             this.nudBalance.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nudBalance.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
             this.nudBalance.Location = new System.Drawing.Point(168, 149);
             this.nudBalance.Maximum = new decimal(new int[] {
             1000000,
@@ -238,6 +252,20 @@
             this.lblStatus.Size = new System.Drawing.Size(121, 20);
             this.lblStatus.TabIndex = 17;
             this.lblStatus.Text = "Status Location";
+            // 
+            // addExpenseToolStripMenuItem
+            // 
+            this.addExpenseToolStripMenuItem.Name = "addExpenseToolStripMenuItem";
+            this.addExpenseToolStripMenuItem.Size = new System.Drawing.Size(86, 20);
+            this.addExpenseToolStripMenuItem.Text = "Add Expense";
+            this.addExpenseToolStripMenuItem.Click += new System.EventHandler(this.addExpenseToolStripMenuItem_Click);
+            // 
+            // addBudgetCatToolStripMenuItem
+            // 
+            this.addBudgetCatToolStripMenuItem.Name = "addBudgetCatToolStripMenuItem";
+            this.addBudgetCatToolStripMenuItem.Size = new System.Drawing.Size(103, 20);
+            this.addBudgetCatToolStripMenuItem.Text = "Add Budget Cat";
+            this.addBudgetCatToolStripMenuItem.Click += new System.EventHandler(this.addBudgetCatToolStripMenuItem_Click);
             // 
             // frmAddAccount
             // 
@@ -288,5 +316,7 @@
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.NumericUpDown nudBalance;
         private System.Windows.Forms.NumericUpDown nudInterest;
+        private System.Windows.Forms.ToolStripMenuItem addExpenseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addBudgetCatToolStripMenuItem;
     }
 }

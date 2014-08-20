@@ -70,6 +70,12 @@
     <Compile Include="frmAddAccount.Designer.cs">
       <DependentUpon>frmAddAccount.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmAddBudgetCat.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmAddBudgetCat.Designer.cs">
+      <DependentUpon>frmAddBudgetCat.cs</DependentUpon>
+    </Compile>
     <Compile Include="sqliteinterface.cs" />
     <Compile Include="frmExpense.cs">
       <SubType>Form</SubType>
@@ -81,6 +87,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="frmAddAccount.resx">
       <DependentUpon>frmAddAccount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmAddBudgetCat.resx">
+      <DependentUpon>frmAddBudgetCat.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmExpense.resx">
       <DependentUpon>frmExpense.cs</DependentUpon>

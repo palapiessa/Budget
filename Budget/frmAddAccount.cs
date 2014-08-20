@@ -42,8 +42,9 @@ namespace budget {
                 }
                 newAccount.interest = Convert.ToDouble(nudInterest.Value);
                 newAccount.balance = Convert.ToDouble(nudBalance.Value);
-                if (/*!this.db.addAccount(newAccount)*/newAccount.add(this.db)) {
+                if (!newAccount.add(this.db)) {
                     updateStatus("Error adding to database.", true);
+                    return false;
                 } else {
                     return true;
                 }
@@ -57,6 +58,7 @@ namespace budget {
 
             return true;
         }
+        /* update the status label */
         public void updateStatus( string message, bool error ) {
             if (error) {
                 lblStatus.ForeColor = System.Drawing.Color.DarkRed;
@@ -85,6 +87,16 @@ namespace budget {
         /* close the form */
         private void exitToolStripMenuItem_Click( object sender, EventArgs e ) {
             this.Close();
+        }
+
+        private void addExpenseToolStripMenuItem_Click( object sender, EventArgs e ) {
+            frmEnterExpense newExpense = new frmEnterExpense();
+            newExpense.Show();
+        }
+
+        private void addBudgetCatToolStripMenuItem_Click( object sender, EventArgs e ) {
+            frmAddBudgetCat newBudgetCat = new frmAddBudgetCat();
+            newBudgetCat.Show();
         }
 
     }

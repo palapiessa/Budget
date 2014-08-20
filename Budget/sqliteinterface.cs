@@ -55,7 +55,7 @@ namespace budget
             List<string> tables = new List<string>();
             tables.Add("CREATE TABLE IF NOT EXISTS accounts (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT, balance REAL, interest REAL, primaryCat INTEGER, postedDate TEXT, userName TEXT)");
             tables.Add("CREATE TABLE IF NOT EXISTS account_Category (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT, postedDate TEXT)");
-            tables.Add("CREATE TABLE IF NOT EXISTS expenses (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, payTo TEXT, amount REAL, postedDate TEXT, notes TEXT, payingAccount INTEGER, budgetCat INTEGER)");
+            tables.Add("CREATE TABLE IF NOT EXISTS expenses (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, payTo TEXT, amount REAL, expenseDate TEXT, postedDate TEXT, notes TEXT, payingAccount INTEGER, budgetCat INTEGER)");
             tables.Add("CREATE TABLE IF NOT EXISTS bills (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT, budgetCat INTEGER, dueDate TEXT, postedDate TEXT, userName TEXT, password TEXT, timeframe INT, estimatedAmount REAL)");
             tables.Add("CREATE TABLE IF NOT EXISTS budget_Category (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT, postedDate TEXT)");
             tables.Add("CREATE TABLE IF NOT EXISTS budget (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT, budgetCat INTEGER, amount REAL, postedDate TEXT)");
@@ -71,6 +71,22 @@ namespace budget
                     }
                 }
             }
+        }
+        public List<string> getPayees() {
+            List<string> payees = new List<string>();
+            string query = "SELECT DISTINCT payTo FROM expenses";
+            using (dbConnection) {
+                dbConnection.Open();
+                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+                    select.CommandText = query;
+                    SQLiteDataReader response = select.ExecuteReader();
+                    while (response.Read()) {
+                        payees.Add(response["payTo"].ToString());
+                    }
+                }
+                dbConnection.Close();
+            }
+            return payees;
         }
         /******************\
         |* ACCOUNTS TABLE *|
@@ -129,22 +145,40 @@ namespace budget
             }
             return a;
         }
+        /* return a list of the accounts */
+        public List<string> getAccounts() {
+            List<string> accounts = new List<string>();
+            string query = "SELECT name FROM accounts";
+            using (dbConnection) {
+                dbConnection.Open();
+                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+                    select.CommandText = query;
+                    SQLiteDataReader response = select.ExecuteReader();
+                    while (response.Read()) {
+                        accounts.Add(response["name"].ToString());
+                    }
+                }
+                dbConnection.Close();
+            }
+            return accounts;
+        }
         /* return the id of the account in the database from the name of the account */
         public int getAccountID( string name ) {
             string query = "SELECT id FROM accounts WHERE name = @name";
+            int accountID = -1;
             using (dbConnection) {
                 dbConnection.Open();
                 using (SQLiteCommand select = dbConnection.CreateCommand()) {
                     select.CommandText = query;
                     select.Parameters.Add("@name", DbType.String).Value = name;
                     SQLiteDataReader response = select.ExecuteReader();
-                    if (response["id"] != null) {
-                        return Convert.ToInt32(response["id"]);
+                    if (response.HasRows) {
+                        accountID = Convert.ToInt32(response["id"]);
                     }
                 }
                 dbConnection.Close();
             }
-            return -1;
+            return accountID;
         }
         /**************************\
         |* ACCOUNT CATEGORY TABLE *|
@@ -176,7 +210,7 @@ namespace budget
                     select.CommandText = query;
                     select.Parameters.Add("@name", DbType.String).Value = name;
                     SQLiteDataReader response = select.ExecuteReader();
-                    if (response["id"] != null) {
+                    if (response.HasRows) {
                         value = Convert.ToInt16(response["id"]);
                     }
                 }
@@ -191,7 +225,7 @@ namespace budget
         public expense getExpense( int id ) {
             expense e = new expense();
             e.id = id;
-            string query = "SELECT payTo, amount, budgetCat, postedDate, payingAccount, notes FROM expenses e WHERE e.id = ?";
+            string query = "SELECT payTo, amount, budgetCat, expenseDate, postedDate, payingAccount, notes FROM expenses e WHERE e.id = ?";
             using (dbConnection) {
                 dbConnection.Open();
                 using (SQLiteCommand select = dbConnection.CreateCommand()) {
@@ -212,7 +246,7 @@ namespace budget
         }
         /* write expense to the database */
         public bool addExpense( expense newExpense ) {
-            string query = "INSERT INTO expenses (payTo, amount, postedDate, notes, payingAccount, budgetCat) VALUES(@payTo, @amount, @postedDate, @notes, @payingAccount, @budgetCat)";
+            string query = "INSERT INTO expenses (payTo, amount, expenseDate, postedDate, notes, payingAccount, budgetCat) VALUES(@payTo, @amount, @expenseDate, @postedDate, @notes, @payingAccount, @budgetCat)";
             bool value = false;
             using (dbConnection) {
                 dbConnection.Open();
@@ -221,9 +255,69 @@ namespace budget
                     insert.Parameters.Add("@payTo", DbType.String).Value = newExpense.payTo;
                     insert.Parameters.Add("@amount", DbType.Double).Value = newExpense.amount;
                     insert.Parameters.Add("@postedDate", DbType.DateTime).Value = newExpense.postedDate;
+                    insert.Parameters.Add("@expenseDate", DbType.DateTime).Value = newExpense.expenseDate;
                     insert.Parameters.Add("@notes", DbType.String).Value = newExpense.notes;
                     insert.Parameters.Add("@payingAccount", DbType.Int16).Value = newExpense.account;
                     insert.Parameters.Add("@budgetCat", DbType.Int16).Value = newExpense.category;
+                    try {
+                        insert.ExecuteNonQuery();
+                        value = true;
+                    } catch (SQLiteException e) {
+                        MessageBox.Show("An error occurred writing to the database.\n" + e.ToString());
+                    } finally {
+                        dbConnection.Close();
+                    }
+                }
+            }
+            return value;
+        }
+        /*************************\
+        |* BUDGET CATEGORY TABLE *|
+        \*************************/
+        public List<string> getBudgetCats() {
+            List<string> cats = new List<string>();
+            string query = "SELECT name FROM budget_Category";
+            using (dbConnection) {
+                dbConnection.Open();
+                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+                    select.CommandText = query;
+                    SQLiteDataReader response = select.ExecuteReader();
+                    while (response.Read()) {
+                        cats.Add(response["name"].ToString());
+                    }
+                }
+                dbConnection.Close();
+            }
+            return cats;
+        }
+        /* return the id of the budget category */
+        public int getBudgetCategoryID( string name ) {
+            string query = "SELECT id FROM budget_Category WHERE name = @name";
+            int id = -1;
+            using (dbConnection) {
+                dbConnection.Open();
+                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+                    select.CommandText = query;
+                    select.Parameters.Add("@name", DbType.String).Value = name;
+                    SQLiteDataReader response = select.ExecuteReader();
+                    if (response.HasRows) {
+                        id = Convert.ToInt16(response["id"]);
+                    }
+                }
+                dbConnection.Close();
+            }
+            return id;
+        }
+        /* add budget category */
+        public bool addBudgetCategory( string name ) {
+            string query = "INSERT INTO budget_Category (name, postedDate) VALUES(@name, @postedDate)";
+            bool value = false;
+            using (dbConnection) {
+                dbConnection.Open();
+                using (SQLiteCommand insert = dbConnection.CreateCommand()) {
+                    insert.CommandText = query;
+                    insert.Parameters.Add("@name", DbType.String).Value = name;
+                    insert.Parameters.Add("@postedDate", DbType.DateTime).Value = DateTime.Now;
                     try {
                         insert.ExecuteNonQuery();
                         value = true;

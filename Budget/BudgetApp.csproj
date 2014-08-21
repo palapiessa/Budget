@@ -62,42 +62,42 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="account.cs" />
-    <Compile Include="accountCat.cs" />
-    <Compile Include="bill.cs" />
-    <Compile Include="budget.cs" />
-    <Compile Include="budgetCat.cs" />
-    <Compile Include="expense.cs" />
-    <Compile Include="frmAddAccount.cs">
+    <Compile Include="Classes\account.cs" />
+    <Compile Include="Classes\accountCat.cs" />
+    <Compile Include="Classes\bill.cs" />
+    <Compile Include="Classes\budget.cs" />
+    <Compile Include="Classes\budgetCat.cs" />
+    <Compile Include="Classes\expense.cs" />
+    <Compile Include="Forms\frmAddAccount.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmAddAccount.Designer.cs">
+    <Compile Include="Forms\frmAddAccount.Designer.cs">
       <DependentUpon>frmAddAccount.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmAddBudgetCat.cs">
+    <Compile Include="Forms\frmAddBudgetCat.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmAddBudgetCat.Designer.cs">
+    <Compile Include="Forms\frmAddBudgetCat.Designer.cs">
       <DependentUpon>frmAddBudgetCat.cs</DependentUpon>
     </Compile>
-    <Compile Include="income.cs" />
-    <Compile Include="ledger.cs" />
-    <Compile Include="sqliteinterface.cs" />
-    <Compile Include="frmExpense.cs">
+    <Compile Include="Classes\income.cs" />
+    <Compile Include="Classes\ledger.cs" />
+    <Compile Include="Classes\sqliteinterface.cs" />
+    <Compile Include="Forms\frmExpense.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmExpense.Designer.cs">
+    <Compile Include="Forms\frmExpense.Designer.cs">
       <DependentUpon>frmExpense.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="frmAddAccount.resx">
+    <EmbeddedResource Include="Forms\frmAddAccount.resx">
       <DependentUpon>frmAddAccount.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmAddBudgetCat.resx">
+    <EmbeddedResource Include="Forms\frmAddBudgetCat.resx">
       <DependentUpon>frmAddBudgetCat.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmExpense.resx">
+    <EmbeddedResource Include="Forms\frmExpense.resx">
       <DependentUpon>frmExpense.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

@@ -1,4 +1,4 @@
-﻿namespace budget {
+﻿namespace budgetapp {
     partial class frmAddAccount {
         /// <summary>
         /// Required designer variable.

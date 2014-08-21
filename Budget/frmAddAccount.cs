@@ -8,12 +8,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace budget {
+namespace budgetapp {
     public partial class frmAddAccount : Form {
         private sqliteInterface db = new sqliteInterface();
         public frmAddAccount() {
             InitializeComponent();
             this.db.createDatabase();
+            DateTime startDate = Convert.ToDateTime("2014-08-19 12:00:00");
+            DateTime endDate = Convert.ToDateTime("2014-08-20 12:00:00");
+            this.db.getExpenseTimeFrame(startDate, endDate);
         }
         private bool addAccount() {
             account newAccount = new account();

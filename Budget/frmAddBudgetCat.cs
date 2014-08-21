@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace budget {
+namespace budgetapp {
     public partial class frmAddBudgetCat : Form {
         sqliteInterface db = new sqliteInterface();
         public frmAddBudgetCat() {
@@ -26,12 +26,13 @@ namespace budget {
         }
 
         public bool addBudgetCat() {
+            budgetCat bc = new budgetCat(txtCategory.Text);
             try {
-                if (txtCategory.Text == "") {
+                if (bc.name == "") {
                     updateStatus("Please enter a category.");
                     return false;
                 }
-                if (!this.db.addBudgetCategory(txtCategory.Text)) {
+                if (!this.db.addBudgetCategory(bc)) {
                     updateStatus("Error adding to database.");
                     return false;
                 } 

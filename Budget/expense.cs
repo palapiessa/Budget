@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace budget {
+namespace budgetapp {
     class expense {
+        // CREATE TABLE IF NOT EXISTS expenses (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, payTo TEXT, amount REAL, expenseDate TEXT, postedDate TEXT, notes TEXT, payingAccount INTEGER, budgetCat INTEGER)
         public string payTo = "";
         public int category = -1;
         public int account = -1;
@@ -36,7 +37,7 @@ namespace budget {
             this.amount = amount;
         }
 
-        public expense( string payTo, int category, int account, string notes, double amount, DateTime postedDate, DateTime expenseDate ) {
+        public expense( string payTo, int category, int account, string notes, double amount, DateTime expenseDate, DateTime postedDate ) {
             this.payTo = payTo;
             this.category = category;
             this.account = account;

@@ -7,7 +7,7 @@ using System.Data;
 using System.Data.SQLite;
 using System.Windows.Forms;
 
-namespace budget
+namespace budgetapp
 {
     class sqliteInterface
     {
@@ -72,6 +72,7 @@ namespace budget
                 }
             }
         }
+        /* returns a list of the payees. there is not a table for these as we want to be able to add them as we add transactions, for sake of brevity */
         public List<string> getPayees() {
             List<string> payees = new List<string>();
             string query = "SELECT DISTINCT payTo FROM expenses";
@@ -218,6 +219,28 @@ namespace budget
             }
             return value;
         }
+        /* add a new account category to the table */
+        public bool addAccountCat(accountCat newCat) {
+            bool value = false;
+            string insertQuery = "INSERT INTO account_Category (name, postedDate) VALUE (@name, @postedDate)";
+            using (dbConnection) {
+                dbConnection.Open();
+                using (SQLiteCommand insert = dbConnection.CreateCommand()) {
+                    insert.CommandText = insertQuery;
+                    insert.Parameters.Add("@name", DbType.String).Value = newCat.name;
+                    insert.Parameters.Add("@postedDate", DbType.DateTime).Value = newCat.postedDate;
+                    try {
+                        insert.ExecuteNonQuery();
+                        value = true;
+                    } catch (SQLiteException e) {
+                        MessageBox.Show("An error occurred writing to the database.\n" + e.ToString());
+                    } finally {
+                        dbConnection.Close();
+                    }
+                }
+            }
+            return value;
+        }
         /*****************\
         |* EXPENSE TABLE *|
         \*****************/
@@ -243,6 +266,39 @@ namespace budget
                 }
             }
             return e;
+        }
+        /* return a list of expenses in a timeframe */
+        public List<expense> getExpenseTimeFrame( DateTime start, DateTime end ) {
+            List<expense> exps = new List<expense>();
+            string query = "SELECT payTo, amount, budgetCat, expenseDate, postedDate, payingAccount, notes FROM expenses e WHERE e.expenseDate BETWEEN @start AND @end";
+            using (dbConnection) {
+                dbConnection.Open();
+                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+                    select.CommandText = query;
+                    select.Parameters.Add("@start", DbType.DateTime).Value = start;
+                    select.Parameters.Add("@end", DbType.DateTime).Value = end;
+                    SQLiteDataReader response = select.ExecuteReader();
+                    try {
+                        while (response.Read()) {
+                            string payTo = response["payTo"].ToString();
+                            double amount = Convert.ToDouble(response["amount"]);
+                            int bCat = Convert.ToInt32(response["budgetCat"]);
+                            int pAccount = Convert.ToInt32(response["payingAccount"]);
+                            string notes = response["notes"].ToString();
+                            DateTime post = Convert.ToDateTime(response["postedDate"]);
+                            DateTime expDate = Convert.ToDateTime(response["expenseDate"]);
+                            expense temp = new expense(payTo, bCat, pAccount, notes, amount, expDate, post);
+                            exps.Add(temp);
+                        }
+                    } catch (SQLiteException e) {
+                        MessageBox.Show("An error occurred reading from the database.\n" + e.ToString());
+                        exps.Clear();
+                    } finally {
+                        dbConnection.Close();
+                    }
+                }
+            }
+            return exps;
         }
         /* write expense to the database */
         public bool addExpense( expense newExpense ) {
@@ -309,15 +365,15 @@ namespace budget
             return id;
         }
         /* add budget category */
-        public bool addBudgetCategory( string name ) {
+        public bool addBudgetCategory( budgetCat bc ) {
             string query = "INSERT INTO budget_Category (name, postedDate) VALUES(@name, @postedDate)";
             bool value = false;
             using (dbConnection) {
                 dbConnection.Open();
                 using (SQLiteCommand insert = dbConnection.CreateCommand()) {
                     insert.CommandText = query;
-                    insert.Parameters.Add("@name", DbType.String).Value = name;
-                    insert.Parameters.Add("@postedDate", DbType.DateTime).Value = DateTime.Now;
+                    insert.Parameters.Add("@name", DbType.String).Value = bc.name;
+                    insert.Parameters.Add("@postedDate", DbType.DateTime).Value = bc.postedDate;
                     try {
                         insert.ExecuteNonQuery();
                         value = true;

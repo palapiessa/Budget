@@ -7,8 +7,8 @@
     <ProjectGuid>{78532FA6-CCD6-46E9-98B7-3CF1E32BAB46}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>budget</RootNamespace>
-    <AssemblyName>Budget</AssemblyName>
+    <RootNamespace>budgetapp</RootNamespace>
+    <AssemblyName>BudgetApp</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PublishUrl>publish\</PublishUrl>
@@ -63,6 +63,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="account.cs" />
+    <Compile Include="accountCat.cs" />
+    <Compile Include="bill.cs" />
+    <Compile Include="budget.cs" />
+    <Compile Include="budgetCat.cs" />
     <Compile Include="expense.cs" />
     <Compile Include="frmAddAccount.cs">
       <SubType>Form</SubType>
@@ -76,6 +80,8 @@
     <Compile Include="frmAddBudgetCat.Designer.cs">
       <DependentUpon>frmAddBudgetCat.cs</DependentUpon>
     </Compile>
+    <Compile Include="income.cs" />
+    <Compile Include="ledger.cs" />
     <Compile Include="sqliteinterface.cs" />
     <Compile Include="frmExpense.cs">
       <SubType>Form</SubType>

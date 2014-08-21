@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace budget
+namespace budgetapp
 {
     public partial class frmEnterExpense : Form
     {
-        private budget.sqliteInterface db = new sqliteInterface();
+        private sqliteInterface db = new sqliteInterface();
         public frmEnterExpense()
         {
             InitializeComponent();
@@ -108,7 +108,7 @@ namespace budget
         }
         /* event handlers */
         private void frmEnterExpense_Load(object sender, EventArgs e) {
-            this.db = new budget.sqliteInterface();
+            this.db = new sqliteInterface();
             this.db.createDatabase();
             loadCombos();
         }

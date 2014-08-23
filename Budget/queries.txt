@@ -1,0 +1,35 @@
+﻿/** Gets last expenses for each payee **/
+
+SELECT
+	e.id, e.payTo, e.expenseDate, a.name
+FROM
+	expenses e
+	INNER JOIN accounts a ON a.ID = e.	payingAccount
+GROUP BY
+	e.payTo /* chnage this to change the way its returned */
+HAVING
+	e.expenseDate = MAX(e.expenseDate)
+ORDER BY
+	e.expenseDate 
+
+/** TODO : Determine how to display a full ledger in a time frame, with all relevant info **/
+// CREATE TABLE IF NOT EXISTS ledger (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, balanceBefore REAL, balanceAfter REAL, expenseID INTEGER, incomeID INTEGER, accountID INTEGER, postedDate TEXT)
+
+SELECT
+	led.id,
+	led.balanceBefore AS [bB,
+	led.balanceAfter AS [bA],
+	e.payTo AS [payee],
+	e.amount AS [expenseAmount],
+	e.notes AS [notes],
+	a.name AS [accountName],
+	i.name AS [incomeName],
+	i.amount AS [incomeAmount],
+	i.postedDate
+FROM
+	ledger led
+	INNER JOIN accounts a ON a.ID = led.accountID
+	LEFT OUTER JOIN expenses e ON e.ID = led.expenseID
+	LEFT OUTER JOIN income i ON i.ID = led.incomeID
+WHERE
+	led.postedDate BETWEEN @start and @end -- trim these for just dates

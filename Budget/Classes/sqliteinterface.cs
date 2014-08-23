@@ -386,5 +386,32 @@ namespace budgetApp
             }
             return value;
         }
+        /****************\
+        |* LEDGER TABLE *|
+        \****************/
+        public bool addLedger( ledger l ) {
+            string query = "INSERT INTO ledger (balanceBefore, balanceAfter, expenseID, incomeID, accountID, postedDate) VALUES(@balanceBefore, @balanceAfter, @expenseID, @incomeID, @accountID, @postedDate)";
+            bool value = false;
+            using (dbConnection) {
+                dbConnection.Open();
+                using (SQLiteCommand insert = dbConnection.CreateCommand()) {
+                    insert.CommandText = query;
+                    insert.Parameters.Add("@balanceBefore", DbType.Double).Value = l.balanceBefore;
+                    insert.Parameters.Add("@balanceAfter", DbType.Double).Value = l.balanceAfter;
+                    insert.Parameters.Add("@expenseID", DbType.Int32).Value = l.expenseID;
+                    insert.Parameters.Add("@incomeID", DbType.Int32).Value = l.incomeID;
+                    insert.Parameters.Add("@accountID", DbType.Int32).Value = l.accountID;
+                    insert.Parameters.Add("@postedDate", DbType.DateTime).Value = l.postedDate;
+                    try {
+
+                    } catch (SQLiteException e) {
+
+                    } finally {
+                        dbConnection.Close();
+                    }
+                }
+            }
+            return value;
+        }
     }    
 }

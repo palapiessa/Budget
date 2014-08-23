@@ -1,4 +1,4 @@
-﻿namespace budgetapp {
+﻿namespace budgetApp {
     partial class frmAddAccount {
         /// <summary>
         /// Required designer variable.
@@ -26,6 +26,8 @@
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.menuToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addExpenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addBudgetCatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lblAccountName = new System.Windows.Forms.Label();
             this.txtAccount = new System.Windows.Forms.TextBox();
             this.lblBalance = new System.Windows.Forms.Label();
@@ -40,8 +42,6 @@
             this.nudInterest = new System.Windows.Forms.NumericUpDown();
             this.nudBalance = new System.Windows.Forms.NumericUpDown();
             this.lblStatus = new System.Windows.Forms.Label();
-            this.addExpenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addBudgetCatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudInterest)).BeginInit();
@@ -77,6 +77,20 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // addExpenseToolStripMenuItem
+            // 
+            this.addExpenseToolStripMenuItem.Name = "addExpenseToolStripMenuItem";
+            this.addExpenseToolStripMenuItem.Size = new System.Drawing.Size(86, 20);
+            this.addExpenseToolStripMenuItem.Text = "Add Expense";
+            this.addExpenseToolStripMenuItem.Click += new System.EventHandler(this.addExpenseToolStripMenuItem_Click);
+            // 
+            // addBudgetCatToolStripMenuItem
+            // 
+            this.addBudgetCatToolStripMenuItem.Name = "addBudgetCatToolStripMenuItem";
+            this.addBudgetCatToolStripMenuItem.Size = new System.Drawing.Size(103, 20);
+            this.addBudgetCatToolStripMenuItem.Text = "Add Budget Cat";
+            this.addBudgetCatToolStripMenuItem.Click += new System.EventHandler(this.addBudgetCatToolStripMenuItem_Click);
             // 
             // lblAccountName
             // 
@@ -252,20 +266,6 @@
             this.lblStatus.Size = new System.Drawing.Size(121, 20);
             this.lblStatus.TabIndex = 17;
             this.lblStatus.Text = "Status Location";
-            // 
-            // addExpenseToolStripMenuItem
-            // 
-            this.addExpenseToolStripMenuItem.Name = "addExpenseToolStripMenuItem";
-            this.addExpenseToolStripMenuItem.Size = new System.Drawing.Size(86, 20);
-            this.addExpenseToolStripMenuItem.Text = "Add Expense";
-            this.addExpenseToolStripMenuItem.Click += new System.EventHandler(this.addExpenseToolStripMenuItem_Click);
-            // 
-            // addBudgetCatToolStripMenuItem
-            // 
-            this.addBudgetCatToolStripMenuItem.Name = "addBudgetCatToolStripMenuItem";
-            this.addBudgetCatToolStripMenuItem.Size = new System.Drawing.Size(103, 20);
-            this.addBudgetCatToolStripMenuItem.Text = "Add Budget Cat";
-            this.addBudgetCatToolStripMenuItem.Click += new System.EventHandler(this.addBudgetCatToolStripMenuItem_Click);
             // 
             // frmAddAccount
             // 

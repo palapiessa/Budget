@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace budgetapp {
+namespace budgetApp {
     class accountCat {
         // CREATE TABLE IF NOT EXISTS account_Category (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT, postedDate TEXT)
         public int id = -1;
@@ -16,7 +16,11 @@ namespace budgetapp {
             this.name = "";
             this.postedDate = DateTime.Now;
         }
-
+        public accountCat( string name ) {
+            this.id = -1;
+            this.name = name;
+            this.postedDate = DateTime.Now;
+        }
         public accountCat( int id, string name, DateTime postedDate ) {
             this.id = id;
             this.name = name;

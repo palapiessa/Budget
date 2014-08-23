@@ -1,11 +1,11 @@
-﻿using budgetapp;
+﻿using budgetApp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace budgetapp
+namespace budgetApp
 {
     static class Program
     {
@@ -17,7 +17,7 @@ namespace budgetapp
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmAddAccount());
+            Application.Run(new frmLanding());
         }
 
     }

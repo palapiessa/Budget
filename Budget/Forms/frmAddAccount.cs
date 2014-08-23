@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace budgetapp {
+namespace budgetApp {
     public partial class frmAddAccount : Form {
         private sqliteInterface db = new sqliteInterface();
         public frmAddAccount() {
@@ -63,11 +63,7 @@ namespace budgetapp {
         }
         /* update the status label */
         public void updateStatus( string message, bool error ) {
-            if (error) {
-                lblStatus.ForeColor = System.Drawing.Color.DarkRed;
-            } else {
-                lblStatus.ForeColor = System.Drawing.Color.LimeGreen;
-            }
+            lblStatus.ForeColor = (error) ? System.Drawing.Color.DarkRed : System.Drawing.Color.LimeGreen;
             lblStatus.Text = message;
         }
         /* event handlers */

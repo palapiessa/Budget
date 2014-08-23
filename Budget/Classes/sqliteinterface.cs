@@ -7,7 +7,7 @@ using System.Data;
 using System.Data.SQLite;
 using System.Windows.Forms;
 
-namespace budgetapp
+namespace budgetApp
 {
     class sqliteInterface
     {
@@ -222,7 +222,7 @@ namespace budgetapp
         /* add a new account category to the table */
         public bool addAccountCat(accountCat newCat) {
             bool value = false;
-            string insertQuery = "INSERT INTO account_Category (name, postedDate) VALUE (@name, @postedDate)";
+            string insertQuery = "INSERT INTO account_Category (name, postedDate) VALUES (@name, @postedDate)";
             using (dbConnection) {
                 dbConnection.Open();
                 using (SQLiteCommand insert = dbConnection.CreateCommand()) {
@@ -270,7 +270,7 @@ namespace budgetapp
         /* return a list of expenses in a timeframe */
         public List<expense> getExpenseTimeFrame( DateTime start, DateTime end ) {
             List<expense> exps = new List<expense>();
-            string query = "SELECT payTo, amount, budgetCat, expenseDate, postedDate, payingAccount, notes FROM expenses e WHERE e.expenseDate BETWEEN @start AND @end";
+            string query = "SELECT payTo, amount, budgetCat, expenseDate, postedDate, payingAccount, notes FROM expenses e WHERE e.expenseDate BETWEEN @start AND @end ORDER BY e.expenseDate ASC";
             using (dbConnection) {
                 dbConnection.Open();
                 using (SQLiteCommand select = dbConnection.CreateCommand()) {

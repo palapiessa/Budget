@@ -9,29 +9,27 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace budgetApp {
-    public partial class frmAddBudgetCat : Form {
+    public partial class frmAddAccountCat : Form {
         sqliteInterface db = new sqliteInterface();
-        public frmAddBudgetCat() {
+        public frmAddAccountCat() {
             InitializeComponent();
             lblStatus.Text = "";
         }
-        /* update the status label */
-        public void updateStatus( string message, bool error = true ) {
+        private void updateStatus( string message, bool error = true ) {
             lblStatus.ForeColor = (error) ? System.Drawing.Color.DarkRed : System.Drawing.Color.LimeGreen;
             lblStatus.Text = message;
         }
-
-        public bool addBudgetCat() {
-            budgetCat bc = new budgetCat(txtCategory.Text);
+        private bool add() {
+            accountCat ac = new accountCat(txtCategory.Text);
             try {
-                if (bc.name == "") {
+                if (ac.name == "") {
                     updateStatus("Please enter a category.");
                     return false;
                 }
-                if (!this.db.addBudgetCategory(bc)) {
+                if (!this.db.addAccountCat(ac)) {
                     updateStatus("Error adding to database.");
                     return false;
-                } 
+                }
             } catch (Exception e) {
                 updateStatus("An error occurred.");
                 MessageBox.Show(e.ToString());
@@ -39,8 +37,12 @@ namespace budgetApp {
             return true;
         }
         /* event handlers */
+        private void exitToolStripMenuItem_Click( object sender, EventArgs e ) {
+            this.Close();
+        }
+
         private void btnAdd_Click( object sender, EventArgs e ) {
-            if (addBudgetCat()) {
+            if (add()) {
                 updateStatus("Successfully added!", false);
                 txtCategory.Clear();
             }

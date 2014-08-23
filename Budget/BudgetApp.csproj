@@ -7,7 +7,7 @@
     <ProjectGuid>{78532FA6-CCD6-46E9-98B7-3CF1E32BAB46}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>budgetapp</RootNamespace>
+    <RootNamespace>budgetApp</RootNamespace>
     <AssemblyName>BudgetApp</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -74,6 +74,12 @@
     <Compile Include="Forms\frmAddAccount.Designer.cs">
       <DependentUpon>frmAddAccount.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\frmAddAccountCat.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmAddAccountCat.Designer.cs">
+      <DependentUpon>frmAddAccountCat.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\frmAddBudgetCat.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -89,16 +95,37 @@
     <Compile Include="Forms\frmExpense.Designer.cs">
       <DependentUpon>frmExpense.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\frmLanding.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmLanding.Designer.cs">
+      <DependentUpon>frmLanding.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmViewExpenses.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmViewExpenses.Designer.cs">
+      <DependentUpon>frmViewExpenses.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\frmAddAccount.resx">
       <DependentUpon>frmAddAccount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmAddAccountCat.resx">
+      <DependentUpon>frmAddAccountCat.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmAddBudgetCat.resx">
       <DependentUpon>frmAddBudgetCat.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmExpense.resx">
       <DependentUpon>frmExpense.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmLanding.resx">
+      <DependentUpon>frmLanding.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmViewExpenses.resx">
+      <DependentUpon>frmViewExpenses.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -110,6 +137,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="Properties\DataSources\ledger.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

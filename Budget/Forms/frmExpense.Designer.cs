@@ -1,4 +1,4 @@
-﻿namespace budgetapp
+﻿namespace budgetApp
 {
     partial class frmEnterExpense
     {

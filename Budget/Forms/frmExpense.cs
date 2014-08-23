@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace budgetapp
+namespace budgetApp
 {
     public partial class frmEnterExpense : Form
     {

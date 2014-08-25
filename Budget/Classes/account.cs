@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace budgetApp {
     class account {
@@ -37,6 +38,15 @@ namespace budgetApp {
         public bool add(sqliteInterface db) {
             if (!db.addAccount(this)) {
                 /* alert error */
+                return false;
+            }
+            try {
+                ledger newledger = new ledger(0, this.balance, -1, -1, db.getAccountID(this.name));
+                if (!db.addLedger(newledger)) {
+                    return false;
+                }
+            } catch (Exception e) {
+                MessageBox.Show("An error occured.\n" + e.ToString());
                 return false;
             }
             return true;

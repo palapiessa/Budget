@@ -245,6 +245,24 @@ namespace budgetApp
         |* EXPENSE TABLE *|
         \*****************/
         /* return an expense object from the id */
+        public int getLastExpenseID( int accountID ) {
+            int value = -1;
+            string query = "SELECT e.ID FROM expenses e WHERE e.payingAccount = @accountID GROUP BY e.payingAccount HAVING e.postedDate = MAX(e.postedDate)";
+            using (dbConnection) {
+                dbConnection.Open();
+                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+                    select.Parameters.Add("@accountID", DbType.Int32).Value = accountID;
+                    select.CommandText = query;
+                    SQLiteDataReader response = select.ExecuteReader();
+                    if (response.HasRows) {
+                        value = Convert.ToInt32(response["ID"]);
+                        MessageBox.Show(value.ToString());
+                    }
+                }
+                dbConnection.Close();
+            }
+            return value;
+        }
         public expense getExpense( int id ) {
             expense e = new expense();
             e.id = id;
@@ -403,15 +421,40 @@ namespace budgetApp
                     insert.Parameters.Add("@accountID", DbType.Int32).Value = l.accountID;
                     insert.Parameters.Add("@postedDate", DbType.DateTime).Value = l.postedDate;
                     try {
-
+                        insert.ExecuteNonQuery();
+                        value = true;
                     } catch (SQLiteException e) {
-
+                        MessageBox.Show("An error occurred writing to the database.\n" + e.ToString());
                     } finally {
                         dbConnection.Close();
                     }
                 }
             }
             return value;
+        }
+        public ledger getLastLedgerForAccount( int accountID ) {
+            ledger l = new ledger();
+            string query = "SELECT led.ID, led.balanceBefore, led.balanceAfter, led.expenseID, led.incomeID, led.accountID, led.postedDate FROM LEDGER led" +
+                " WHERE led.accountID = @accountID GROUP BY led.accountID HAVING led.postedDate = MAX(led.postedDate)";
+            using (dbConnection) {
+                dbConnection.Open();
+                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+                    select.CommandText = query;
+                    select.Parameters.Add("@accountID", DbType.Int32).Value = accountID;
+                    SQLiteDataReader response = select.ExecuteReader();
+                    if (response.HasRows) {
+                        l.id = Convert.ToInt32(response["ID"]);
+                        l.balanceBefore = Convert.ToDouble(response["balanceBefore"]);
+                        l.balanceAfter = Convert.ToDouble(response["balanceAfter"]);
+                        l.expenseID = Convert.ToInt32(response["expenseID"]);
+                        l.incomeID = Convert.ToInt32(response["incomeID"]);
+                        l.accountID = Convert.ToInt32(response["accountID"]);
+                        l.postedDate = Convert.ToDateTime(response["postedDate"]);
+                    }
+                }
+                dbConnection.Close();
+            }
+            return l;
         }
     }    
 }

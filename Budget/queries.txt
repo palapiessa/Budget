@@ -12,12 +12,50 @@ HAVING
 ORDER BY
 	e.expenseDate 
 
+
+
+
+/*
+THERE IS A LARGE ISSUE DEALING WITH LEDGERS AND EXPENSES
+IF AN EXPENSE IS ENTERED WITH AN EXPENSE DATE BEFORE THE LAST ENTERED DATE,
+THE VALUES ARE WRONG. POSSIBLE SOLUTION, REBUILD LEDGER TABLE WHEN THE EXPENSE DATE IS BEFORE
+THE LAST POSTED DATE.
+*/
+
+
+/** Get last ledger for a specific account, when an expense is entered. **/
+SELECT
+	led.balanceAfter AS [bA]
+FROM
+	ledger led
+WHERE
+	led.accountID = @accountID
+GROUP BY
+	led.accountID
+HAVING
+	led.postedDate = MAX(led.postedDate)
+
+/* get last expense id */
+SELECT
+	e.ID
+FROM
+	expenses e
+WHERE
+	e.payingAccount = @accountID
+GROUP BY
+	e.payingAccount
+HAVING
+	e.postedDate = MAX(e.postedDate)
+
+/* Add expense and create new ledger */
+int balanceAfter = lastLedger.balanceAfter - 
+
 /** TODO : Determine how to display a full ledger in a time frame, with all relevant info **/
 // CREATE TABLE IF NOT EXISTS ledger (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, balanceBefore REAL, balanceAfter REAL, expenseID INTEGER, incomeID INTEGER, accountID INTEGER, postedDate TEXT)
 
 SELECT
 	led.id,
-	led.balanceBefore AS [bB,
+	led.balanceBefore AS [bB],
 	led.balanceAfter AS [bA],
 	e.payTo AS [payee],
 	e.amount AS [expenseAmount],

@@ -74,6 +74,9 @@ namespace budgetApp
         private void loadAccounts() {
             List<string> accounts = new List<string>();
             accounts = this.db.getAccounts();
+            if (accounts.Count == 0) {
+                cmbAccount.Items.Add("Please add an account first.");
+            }
             foreach (string account in accounts) {
                 cmbAccount.Items.Add(account);
             }

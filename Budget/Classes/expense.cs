@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace budgetApp {
     class expense {
@@ -52,6 +53,15 @@ namespace budgetApp {
             /* sqlite code to add expense to the database */
             /* need to pull the catid and account id to make sure those are the ones that get posted */
             if (!db.addExpense(this)) {
+                return false;
+            }
+            this.id = db.getLastExpenseID(this.account);
+            ledger lastLed = db.getLastLedgerForAccount(this.account);
+            if (lastLed.postedDate < this.postedDate) {
+                MessageBox.Show("Expense date before last posted. Problem time...");
+            }
+            ledger newLed = new ledger(lastLed.balanceAfter, (lastLed.balanceAfter - this.amount), this.id, -1, this.account, this.postedDate);
+            if (!db.addLedger(newLed)) {
                 return false;
             }
             return true;

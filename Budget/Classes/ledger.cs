@@ -33,6 +33,24 @@ namespace budgetApp {
             this.accountID = accountID;
             this.postedDate = postedDate;
         }
+        public ledger( double balanceBefore, double balanceAfter, int expenseID, int incomeID, int accountID, DateTime postedDate ) {
+            this.id = -1;
+            this.balanceBefore = balanceBefore;
+            this.balanceAfter = balanceAfter;
+            this.expenseID = expenseID;
+            this.incomeID = incomeID;
+            this.accountID = accountID;
+            this.postedDate = postedDate;
+        }
+        public ledger( double balanceBefore, double balanceAfter, int expenseID, int incomeID, int accountID ) {
+            this.id = -1;
+            this.balanceBefore = balanceBefore;
+            this.balanceAfter = balanceAfter;
+            this.expenseID = expenseID;
+            this.incomeID = incomeID;
+            this.accountID = accountID;
+            this.postedDate = DateTime.Now;
+        }
         public ledger( int id, double balanceBefore, double balanceAfter, int expenseID, int incomeID, int accountID ) {
             this.id = id;
             this.balanceBefore = balanceBefore;

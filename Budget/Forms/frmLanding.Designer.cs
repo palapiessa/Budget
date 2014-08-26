@@ -38,6 +38,7 @@
             this.btnAddBudgetCat = new System.Windows.Forms.Button();
             this.btnAddAccountCat = new System.Windows.Forms.Button();
             this.ledgerBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.btnTesting = new System.Windows.Forms.Button();
             this.mnuMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvLedger)).BeginInit();
@@ -180,12 +181,23 @@
             // 
             this.ledgerBindingSource.DataSource = typeof(budgetApp.ledger);
             // 
+            // btnTesting
+            // 
+            this.btnTesting.Location = new System.Drawing.Point(1636, 405);
+            this.btnTesting.Name = "btnTesting";
+            this.btnTesting.Size = new System.Drawing.Size(116, 45);
+            this.btnTesting.TabIndex = 6;
+            this.btnTesting.Text = "Test Button";
+            this.btnTesting.UseVisualStyleBackColor = true;
+            this.btnTesting.Click += new System.EventHandler(this.btnTesting_Click);
+            // 
             // frmLanding
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.ClientSize = new System.Drawing.Size(1764, 717);
+            this.Controls.Add(this.btnTesting);
             this.Controls.Add(this.btnViewExps);
             this.Controls.Add(this.btnAddExpense);
             this.Controls.Add(this.btnAddBudgetCat);
@@ -222,5 +234,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvPayto;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvAmount;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvBalance;
+        private System.Windows.Forms.Button btnTesting;
     }
 }

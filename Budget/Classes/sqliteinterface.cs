@@ -456,5 +456,30 @@ namespace budgetApp
             }
             return l;
         }
+        /* returns a datetime with the first entry date for a ledger */
+        public DateTime getLedgerDate( int accountID, bool first = true ) {
+            DateTime initial = DateTime.MinValue;
+            string time = (first) ? "MIN" : "MAX";
+            string query = "SELECT " + time + "(led.postedDate)" + "AS [minDate] FROM ledger led WHERE led.accountID = @accountID";
+            using (dbConnection) {
+                dbConnection.Open();
+                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+                    select.CommandText = query;
+                    select.Parameters.Add("@accountID", DbType.Int32).Value = accountID;
+                    SQLiteDataReader response = select.ExecuteReader();
+                    if (response.HasRows) {
+                        initial = Convert.ToDateTime(response["minDate"]);
+                    }
+                }
+                dbConnection.Close();
+            }
+            return initial;
+        }
+        public bool updateLedgersBeforeTimeFrame( int accountID ) {
+            List<ledger> befores = new List<ledger>();
+            DateTime first = this.getLedgerDate(accountID);
+            DateTime last = this.getLedgerDate(accountID, false);
+            return false;
+        }
     }    
 }

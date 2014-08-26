@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 namespace budgetApp {
     public partial class frmLanding : Form {
+        private sqliteInterface db = new sqliteInterface();
         public frmLanding() {
             InitializeComponent();
             test();
@@ -53,6 +54,13 @@ namespace budgetApp {
 
         private void dataGridView1_CellContentClick( object sender, DataGridViewCellEventArgs e ) {
 
+        }
+
+        private void btnTesting_Click( object sender, EventArgs e ) {
+            DateTime test = DateTime.MaxValue;
+            test = this.db.getLedgerDate(10);
+            test = this.db.getLedgerDate(10, false);
+            MessageBox.Show(test.ToString());
         }
     }
 }

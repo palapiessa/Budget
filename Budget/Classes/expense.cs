@@ -60,7 +60,7 @@ namespace budgetApp {
             if (lastLed.postedDate < this.postedDate) {
                 MessageBox.Show("Expense date before last posted. Problem time...");
             }
-            ledger newLed = new ledger(lastLed.balanceAfter, (lastLed.balanceAfter - this.amount), this.id, -1, this.account, this.postedDate);
+            ledger newLed = new ledger(lastLed.balanceAfter, (lastLed.balanceAfter - this.amount), this.id, -1, this.account, this.expenseDate);
             if (!db.addLedger(newLed)) {
                 return false;
             }

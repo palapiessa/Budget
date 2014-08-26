@@ -20,6 +20,10 @@ THERE IS A LARGE ISSUE DEALING WITH LEDGERS AND EXPENSES
 IF AN EXPENSE IS ENTERED WITH AN EXPENSE DATE BEFORE THE LAST ENTERED DATE,
 THE VALUES ARE WRONG. POSSIBLE SOLUTION, REBUILD LEDGER TABLE WHEN THE EXPENSE DATE IS BEFORE
 THE LAST POSTED DATE.
+
+1) Get a list of expenses from the new expense date to the current date, ordered by date.
+2) Get a list of ledgers that tie the list of expenses to the ledgers. (WHERE @expenseID = List(expense ids))
+3) Insert new expense first, adding a ledger. 
 */
 
 

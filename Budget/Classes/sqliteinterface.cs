@@ -244,7 +244,7 @@ namespace budgetApp
         /*****************\
         |* EXPENSE TABLE *|
         \*****************/
-        /* return an expense object from the id */
+        /* returns the last expense that was entered for a specific account */
         public int getLastExpenseID( int accountID ) {
             int value = -1;
             string query = "SELECT e.ID FROM expenses e WHERE e.payingAccount = @accountID GROUP BY e.payingAccount HAVING e.postedDate = MAX(e.postedDate)";
@@ -263,14 +263,15 @@ namespace budgetApp
             }
             return value;
         }
+        /* using the expense id, return the entire expense object */
         public expense getExpense( int id ) {
             expense e = new expense();
             e.id = id;
-            string query = "SELECT payTo, amount, budgetCat, expenseDate, postedDate, payingAccount, notes FROM expenses e WHERE e.id = ?";
+            string query = "SELECT payTo, amount, budgetCat, expenseDate, postedDate, payingAccount, notes FROM expenses e WHERE e.id = @id";
             using (dbConnection) {
                 dbConnection.Open();
                 using (SQLiteCommand select = dbConnection.CreateCommand()) {
-                    select.Parameters.Add(id);
+                    select.Parameters.Add("@id", DbType.Int32).Value = id;
                     select.CommandText = query;
                     select.CommandType = System.Data.CommandType.Text;
                     SQLiteDataReader response = select.ExecuteReader();
@@ -280,8 +281,10 @@ namespace budgetApp
                     e.category = Convert.ToInt32(response["budgetCat"]);
                     e.account = Convert.ToInt32(response["payingAccount"]);
                     e.notes = response["notes"].ToString();
-                    e.postedDate = (DateTime)response["postedDate"];
+                    e.postedDate = Convert.ToDateTime(response["postedDate"]);
+                    e.expenseDate = Convert.ToDateTime(response["expenseDate"]);
                 }
+                dbConnection.Close();
             }
             return e;
         }
@@ -407,6 +410,7 @@ namespace budgetApp
         /****************\
         |* LEDGER TABLE *|
         \****************/
+        /* adds the ledger object to the ledger table */
         public bool addLedger( ledger l ) {
             string query = "INSERT INTO ledger (balanceBefore, balanceAfter, expenseID, incomeID, accountID, postedDate) VALUES(@balanceBefore, @balanceAfter, @expenseID, @incomeID, @accountID, @postedDate)";
             bool value = false;
@@ -432,6 +436,7 @@ namespace budgetApp
             }
             return value;
         }
+        /* get the last ledger entered for an account */
         public ledger getLastLedgerForAccount( int accountID ) {
             ledger l = new ledger();
             string query = "SELECT led.ID, led.balanceBefore, led.balanceAfter, led.expenseID, led.incomeID, led.accountID, led.postedDate FROM LEDGER led" +
@@ -456,18 +461,21 @@ namespace budgetApp
             }
             return l;
         }
-        /* returns a datetime with the first entry date for a ledger */
-        public DateTime getLedgerDate( int accountID, bool first = true ) {
+        /* returns a datetime with the first or last entry date for a ledger */
+        public DateTime getLedgerDate( int accountID, DateTime startTime, bool first = true ) {
             DateTime initial = DateTime.MinValue;
             string time = (first) ? "MIN" : "MAX";
-            string query = "SELECT " + time + "(led.postedDate)" + "AS [minDate] FROM ledger led WHERE led.accountID = @accountID";
+            string ending = (first) ? " AND led.postedDate > @start" : "";
+            string query = "SELECT " + time + "(led.postedDate)" + "AS [minDate] FROM ledger led WHERE led.accountID = @accountID" + ending;
             using (dbConnection) {
                 dbConnection.Open();
                 using (SQLiteCommand select = dbConnection.CreateCommand()) {
                     select.CommandText = query;
                     select.Parameters.Add("@accountID", DbType.Int32).Value = accountID;
+                    if (first) { select.Parameters.Add("@start", DbType.DateTime).Value = startTime;  }
                     SQLiteDataReader response = select.ExecuteReader();
                     if (response.HasRows) {
+                        //MessageBox.Show(response["minDate"].ToString());
                         initial = Convert.ToDateTime(response["minDate"]);
                     }
                 }
@@ -475,11 +483,110 @@ namespace budgetApp
             }
             return initial;
         }
-        public bool updateLedgersBeforeTimeFrame( int accountID ) {
+        /* updates balances approriately when the new expense entered has a posting date that is before another entry in the ledger table */
+        public bool updateLedgersBeforeTimeFrame( expense newExpense ) {
             List<ledger> befores = new List<ledger>();
-            DateTime first = this.getLedgerDate(accountID);
-            DateTime last = this.getLedgerDate(accountID, false);
+            DateTime first = this.getLedgerDate(newExpense.account, newExpense.expenseDate);
+            DateTime last = this.getLedgerDate(newExpense.account, DateTime.Now, false);
+            string query = "SELECT led.ID, led.balanceBefore, led.balanceAfter, led.expenseID, led.incomeID, led.accountID, led.postedDate FROM LEDGER led" +
+                " WHERE led.accountID = @accountID AND led.postedDate BETWEEN @first AND @last ORDER BY led.postedDate ASC";
+            /* get a list of the ledgers from the new date to the last date in the ledger */
+            using (dbConnection) {
+                dbConnection.Open();
+                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+                    select.CommandText = query;
+                    select.Parameters.Add("@accountID", DbType.Int32).Value = newExpense.account;
+                    select.Parameters.Add("@first", DbType.DateTime).Value = first;
+                    select.Parameters.Add("@last", DbType.DateTime).Value = last;
+                    SQLiteDataReader response = select.ExecuteReader();
+                    while (response.Read()) {
+                        ledger temp = new ledger();
+                        temp.id = Convert.ToInt32(response["ID"]);
+                        temp.balanceBefore = Convert.ToDouble(response["balanceBefore"]);
+                        temp.balanceAfter = Convert.ToDouble(response["balanceAfter"]);
+                        temp.expenseID = Convert.ToInt32(response["expenseID"]);
+                        temp.incomeID = Convert.ToInt32(response["incomeID"]);
+                        temp.accountID = Convert.ToInt32(response["accountID"]);
+                        temp.postedDate = Convert.ToDateTime(response["postedDate"]);
+                        // append, in order, the ledgers to the list
+                        befores.Add(temp);
+                    }
+                }
+                dbConnection.Close();
+            }
+
+            //return false;
+           
+            /* alter the first entry */
+            int firstID = befores[0].id;
+            ledger newLedger = new ledger();
+            double tempBB = 0.00; // will be the Before Balance from the first item that is in the database
+            double tempBA = 0.00; // will be the corrected after balance
+            /* start with the youngest ledger that is older than the new expense */
+            tempBB = befores[0].balanceBefore;
+            newLedger.balanceBefore = tempBB;
+            tempBA = tempBB - (newExpense.amount);
+            newLedger.balanceAfter = tempBA;
+            newLedger.postedDate = newExpense.expenseDate;
+            newLedger.accountID = newExpense.account;
+            /* new ledger is complete, insert into database */
+            expense tempExpense = new expense();
+            /* SEE THE PATTERN ?!? */
+            tempExpense = getExpense(befores[0].expenseID);
+            tempBB = tempBA;
+            tempBA = tempBB - tempExpense.amount;
+            befores[0].balanceBefore = tempBB;
+            befores[0].balanceAfter = tempBA;
+
+            tempExpense = getExpense(befores[1].expenseID);
+            tempBB = tempBA;
+            tempBA = tempBB - tempExpense.amount;
+            befores[1].balanceBefore = tempBB;
+            befores[1].balanceAfter = tempBA;
+
+            tempExpense = getExpense(befores[2].expenseID);
+            tempBB = tempBA;
+            tempBA = tempBB - tempExpense.amount;
+            befores[2].balanceBefore = tempBB;
+            befores[2].balanceAfter = tempBA;
+            /* THE LOOP WILL END HERE */
+            string pause = "";
+            /* loop through the original ledgers, updating balanceBefore and balanceAfter */
+            /* General algorithm:
+             * 1) Update balanceBefore to tempBA. Update tempBA = tempBA - expense.amount (will require a pull from DB)
+             * 2) Loop to next one
+             * 
+             * 1) Write an updateLedger function: updateLedger ( ledger l )
+             * 2) Write a get expenseAmount function: getExpenseAmount(int id) {} returns double with amount -- ALREADY HAVE ONE IDIOT
+             */
+
+
+
+            //expense newExpense = getExpense(newEntry.expenseID);
+            // ALTER * WHERE id = @firstID
+            //for (int i = 0; i < befores.Count; i++) {
+            //    query = "UPDATE ledger SET balanceBefore=@newBefore, balanceAfter=@newAfter, expenseID=@newExpense WHERE id = @id";
+            //    using (dbConnection) {
+            //        dbConnection.Open();
+            //        using (SQLiteCommand update = dbConnection.CreateCommand()) {
+            //            update.CommandText = query;
+            //            /* TODO - THIS LOGIC IS NOT CORRECT!!! */
+            //            update.Parameters.Add("@newBefore", DbType.Double).Value = befores[i].balanceBefore;
+            //            update.Parameters.Add("@newAfter", DbType.Double).Value = befores[i].balanceAfter;
+            //            update.Parameters.Add("@expenseID", DbType.Int32).Value = befores[i].expenseID;
+            //            update.Parameters.Add("@id", DbType.Int32).Value = befores[i].id;
+            //        }
+            //        dbConnection.Close();
+            //    }
+            //    MessageBox.Show(befores[i].expenseID.ToString());
+            //}
             return false;
+        }
+        /* updates a ledger */
+        public bool updateLedger(ledger l) {
+            bool value = false;
+            /* code to actually update ledger */
+            return value;
         }
     }    
 }

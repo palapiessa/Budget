@@ -57,7 +57,7 @@ namespace budgetApp {
             }
             this.id = db.getLastExpenseID(this.account);
             ledger lastLed = db.getLastLedgerForAccount(this.account);
-            if (lastLed.postedDate < this.postedDate) {
+            if (lastLed.postedDate > this.postedDate) {
                 MessageBox.Show("Expense date before last posted. Problem time...");
             }
             ledger newLed = new ledger(lastLed.balanceAfter, (lastLed.balanceAfter - this.amount), this.id, -1, this.account, this.expenseDate);

@@ -13,6 +13,7 @@ namespace budgetApp {
         private sqliteInterface db = new sqliteInterface();
         public frmLanding() {
             InitializeComponent();
+            this.db.createDatabase();
             test();
         }
         
@@ -61,8 +62,9 @@ namespace budgetApp {
             test = this.db.getLedgerDate(10);
             test = this.db.getLedgerDate(10, false);
             MessageBox.Show(test.ToString());*/
-            ledger l = new ledger(0.00, 1000.00, 72, -1, 10, Convert.ToDateTime("2014-06-01 00:00:59.0001"));
-            expense test = this.db.getExpense(15);
+            //ledger l = new ledger(0.00, 1000.00, 72, -1, 10, Convert.ToDateTime("2014-06-01 00:00:59.0001"));
+            expense test = this.db.getExpense(18);
+            
             /*test.expenseDate = Convert.ToDateTime("2014-08-01 11:30:10.00001");
             test.account = 10;
             test.amount = 500.00;*/

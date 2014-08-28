@@ -256,7 +256,7 @@ namespace budgetApp
                     SQLiteDataReader response = select.ExecuteReader();
                     if (response.HasRows) {
                         value = Convert.ToInt32(response["ID"]);
-                        MessageBox.Show(value.ToString());
+                        //MessageBox.Show(value.ToString());
                     }
                 }
                 dbConnection.Close();
@@ -463,10 +463,13 @@ namespace budgetApp
         }
         /* returns a datetime with the first or last entry date for a ledger */
         public DateTime getLedgerDate( int accountID, DateTime startTime, bool first = true ) {
+            
+            /* TODO - WHAT HAPPENS IF THE TRANSACTION BEING ENTERED IS BEFORE THE FIRST TRANSACTION, BUT AFTER THE FIRST LEDGER???????*/
+            
             DateTime initial = DateTime.MinValue;
             string time = (first) ? "MIN" : "MAX";
             string ending = (first) ? " AND led.postedDate > @start" : "";
-            string query = "SELECT " + time + "(led.postedDate)" + "AS [minDate] FROM ledger led WHERE led.accountID = @accountID" + ending;
+            string query = "SELECT " + time + "(led.postedDate)" + "AS [minDate] FROM ledger led WHERE led.accountID = @accountID" + ending + " AND led.expenseID <> -1";
             using (dbConnection) {
                 dbConnection.Open();
                 using (SQLiteCommand select = dbConnection.CreateCommand()) {
@@ -480,6 +483,10 @@ namespace budgetApp
                     }
                 }
                 dbConnection.Close();
+            }
+            /* handle the case where the entered time is before the first expense date, but after the account creation */
+            if (initial > startTime) {
+                initial = startTime;
             }
             return initial;
         }
@@ -530,15 +537,25 @@ namespace budgetApp
             newLedger.postedDate = newExpense.expenseDate;
             newLedger.accountID = newExpense.account;
             /* new ledger is complete, insert into database */
+            if (!addLedger(newLedger)) {
+                return false;
+            }
+
             expense tempExpense = new expense();
             /* SEE THE PATTERN ?!? */
-            tempExpense = getExpense(befores[0].expenseID);
-            tempBB = tempBA;
-            tempBA = tempBB - tempExpense.amount;
-            befores[0].balanceBefore = tempBB;
-            befores[0].balanceAfter = tempBA;
+            for (int i = 0; i < befores.Count; i++) {
+                tempExpense = getExpense(befores[i].expenseID);
+                tempBB = tempBA;
+                tempBA = tempBB - tempExpense.amount;
+                befores[i].balanceBefore = tempBB;
+                befores[i].balanceAfter = tempBA;
+                if (!updateLedger(befores[i])) {
+                    MessageBox.Show("An error occurred updating the ledger.\n");
+                    return false;
+                }
+            }
 
-            tempExpense = getExpense(befores[1].expenseID);
+            /*tempExpense = getExpense(befores[1].expenseID);
             tempBB = tempBA;
             tempBA = tempBB - tempExpense.amount;
             befores[1].balanceBefore = tempBB;
@@ -548,9 +565,10 @@ namespace budgetApp
             tempBB = tempBA;
             tempBA = tempBB - tempExpense.amount;
             befores[2].balanceBefore = tempBB;
-            befores[2].balanceAfter = tempBA;
+            befores[2].balanceAfter = tempBA;*/
+
             /* THE LOOP WILL END HERE */
-            string pause = "";
+            //string pause = "";
             /* loop through the original ledgers, updating balanceBefore and balanceAfter */
             /* General algorithm:
              * 1) Update balanceBefore to tempBA. Update tempBA = tempBA - expense.amount (will require a pull from DB)
@@ -580,12 +598,29 @@ namespace budgetApp
             //    }
             //    MessageBox.Show(befores[i].expenseID.ToString());
             //}
-            return false;
+            return true;
         }
         /* updates a ledger */
         public bool updateLedger(ledger l) {
             bool value = false;
-            /* code to actually update ledger */
+            string query = "UPDATE ledger SET balanceBefore=@newBefore, balanceAfter=@newAfter WHERE id = @id";
+            using (dbConnection) {
+                dbConnection.Open();
+                using (SQLiteCommand update = dbConnection.CreateCommand()) {
+                    update.CommandText = query;
+                    update.Parameters.Add("@newBefore", DbType.Double).Value = l.balanceBefore;
+                    update.Parameters.Add("@newAfter", DbType.Double).Value = l.balanceAfter;
+                    update.Parameters.Add("@id", DbType.Int32).Value = l.id;
+                    try {
+                        update.ExecuteNonQuery();
+                        value = true;
+                    } catch (SQLiteException e) {
+                        MessageBox.Show("An error occurred writing to database.\n" + e.ToString());
+                    } finally {
+                        dbConnection.Close();
+                    }
+                }
+            }
             return value;
         }
     }    

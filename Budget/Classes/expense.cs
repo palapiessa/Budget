@@ -57,12 +57,17 @@ namespace budgetApp {
             }
             this.id = db.getLastExpenseID(this.account);
             ledger lastLed = db.getLastLedgerForAccount(this.account);
-            if (lastLed.postedDate > this.postedDate) {
-                MessageBox.Show("Expense date before last posted. Problem time...");
-            }
-            ledger newLed = new ledger(lastLed.balanceAfter, (lastLed.balanceAfter - this.amount), this.id, -1, this.account, this.expenseDate);
-            if (!db.addLedger(newLed)) {
-                return false;
+            if (lastLed.postedDate > this.expenseDate) {
+                //MessageBox.Show("Expense date before last posted. Problem time...");
+                if (!db.updateLedgersBeforeTimeFrame(this)) {
+                    MessageBox.Show("An error occurred updating prior records.");
+                    return false;
+                }
+            } else {
+                ledger newLed = new ledger(lastLed.balanceAfter, (lastLed.balanceAfter - this.amount), this.id, -1, this.account, this.expenseDate);
+                if (!db.addLedger(newLed)) {
+                    return false;
+                }
             }
             return true;
         }

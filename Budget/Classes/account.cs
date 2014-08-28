@@ -22,6 +22,7 @@ namespace budgetApp {
             this.interest = 0.00;
             this.balance = 0.00;
             this.userName = "";
+            /* TODO */
             this.postedDate = DateTime.Now;
             this.id = -1;
         }
@@ -41,7 +42,8 @@ namespace budgetApp {
                 return false;
             }
             try {
-                ledger newledger = new ledger(0, this.balance, -1, -1, db.getAccountID(this.name));
+                /* TODO - FIX postedDate */
+                ledger newledger = new ledger(0, this.balance, -1, -1, db.getAccountID(this.name), Convert.ToDateTime("2014-01-01 00:00:01"));
                 if (!db.addLedger(newledger)) {
                     return false;
                 }

@@ -14,6 +14,7 @@ namespace budgetApp {
         public frmAddAccount() {
             InitializeComponent();
             this.db.createDatabase();
+            /* TODO */
             DateTime startDate = Convert.ToDateTime("2014-08-19 12:00:00");
             DateTime endDate = Convert.ToDateTime("2014-08-20 12:00:00");
             this.db.getExpenseTimeFrame(startDate, endDate);

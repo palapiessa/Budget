@@ -58,6 +58,7 @@ namespace budgetApp {
             this.id = db.getLastExpenseID(this.account);
             ledger lastLed = db.getLastLedgerForAccount(this.account);
             if (lastLed.postedDate > this.expenseDate) {
+                this.id = db.getLastExpenseID(this.account);
                 //MessageBox.Show("Expense date before last posted. Problem time...");
                 if (!db.updateLedgersBeforeTimeFrame(this)) {
                     MessageBox.Show("An error occurred updating prior records.");

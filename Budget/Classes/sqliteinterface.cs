@@ -463,13 +463,10 @@ namespace budgetApp
         }
         /* returns a datetime with the first or last entry date for a ledger */
         public DateTime getLedgerDate( int accountID, DateTime startTime, bool first = true ) {
-            
-            /* TODO - WHAT HAPPENS IF THE TRANSACTION BEING ENTERED IS BEFORE THE FIRST TRANSACTION, BUT AFTER THE FIRST LEDGER???????*/
-            
             DateTime initial = DateTime.MinValue;
             string time = (first) ? "MIN" : "MAX";
             string ending = (first) ? " AND led.postedDate > @start" : "";
-            string query = "SELECT " + time + "(led.postedDate)" + "AS [minDate] FROM ledger led WHERE led.accountID = @accountID" + ending + " AND led.expenseID <> -1";
+            string query = "SELECT " + time + "(led.postedDate)" + "AS [minDate] FROM ledger led WHERE led.accountID = @accountID" + ending;// +" AND led.expenseID <> -1";
             using (dbConnection) {
                 dbConnection.Open();
                 using (SQLiteCommand select = dbConnection.CreateCommand()) {
@@ -535,6 +532,7 @@ namespace budgetApp
             tempBA = tempBB - (newExpense.amount);
             newLedger.balanceAfter = tempBA;
             newLedger.postedDate = newExpense.expenseDate;
+            newLedger.expenseID = newExpense.id;
             newLedger.accountID = newExpense.account;
             /* new ledger is complete, insert into database */
             if (!addLedger(newLedger)) {

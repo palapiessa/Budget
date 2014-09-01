@@ -11,15 +11,19 @@ using System.Windows.Forms;
 namespace budgetApp {
     public partial class frmAddAccount : Form {
         private sqliteInterface db = new sqliteInterface();
+        private bool addAccountCat = true;
         public frmAddAccount() {
             InitializeComponent();
             this.db.createDatabase();
-            /* TODO */
-            DateTime startDate = Convert.ToDateTime("2014-08-19 12:00:00");
-            DateTime endDate = Convert.ToDateTime("2014-08-20 12:00:00");
-            this.db.getExpenseTimeFrame(startDate, endDate);
         }
+        /* clean the form data, ensure proper fields are entered, display errors where found
+         * attempt to add the account to the database
+         */
         private bool addAccount() {
+            if (this.addAccountCat) {
+                updateStatus("Update account category", true);
+                return false;
+            }
             account newAccount = new account();
             try {
                 if (txtAccount.Text != "") {
@@ -67,6 +71,44 @@ namespace budgetApp {
             lblStatus.ForeColor = (error) ? System.Drawing.Color.DarkRed : System.Drawing.Color.LimeGreen;
             lblStatus.Text = message;
         }
+        /* load the combo box with categories */
+        private void loadComboCats() {
+            List<string> cats = new List<string>();
+            cats = this.db.getAccountCategories();
+            lblStatus.Text = "";
+            cmbCategories.Items.Clear();
+            foreach (string cat in cats) {
+                cmbCategories.Items.Add(cat);
+            }
+        }
+        /* enable the form controls based on the results of the account cateogry calls */
+        public void enableFormControls() {
+            loadComboCats();
+            if (cmbCategories.Items.Count > 0) {
+                this.addAccountCat = false;
+                switchFormControls();
+            } else {
+                switchFormControls(false);
+            }
+        }
+        /* enable or disable the controls for the form */
+        private void switchFormControls( bool enable = true ) {
+            if (!enable) {
+                btnAdd.Enabled = false;
+                cmbCategories.Enabled = false;
+                txtAccount.Enabled = false;
+                txtUser.Enabled = false;
+                nudBalance.Enabled = false;
+                nudInterest.Enabled = false;
+            } else {
+                btnAdd.Enabled = true;
+                cmbCategories.Enabled = true;
+                txtAccount.Enabled = true;
+                txtUser.Enabled = true;
+                nudBalance.Enabled = true;
+                nudInterest.Enabled = true;
+            }
+        }
         /* event handlers */
         private void btnAdd_Click( object sender, EventArgs e ) {
             if (addAccount()) {
@@ -75,15 +117,10 @@ namespace budgetApp {
         }
         /* TODO: move this off the event handler */
         private void frmAddAccount_Load( object sender, EventArgs e ) {
-            List<string> cats = new List<string>();
-            cats = this.db.getAccountCategories();
-            lblStatus.Text = "";
             /* load category combobox with values */
-            foreach (string cat in cats) {
-                cmbCategories.Items.Add(cat);
-            }
-            cmbCategories.SelectedIndex = 0;
+            enableFormControls();
         }
+
         /* close the form */
         private void exitToolStripMenuItem_Click( object sender, EventArgs e ) {
             this.Close();
@@ -99,5 +136,13 @@ namespace budgetApp {
             newBudgetCat.Show();
         }
 
+        private void btnCancel_Click( object sender, EventArgs e ) {
+            this.Close();
+        }
+
+        private void lblAddCat_Click( object sender, EventArgs e ) {
+            frmAddAccountCat newCat = new frmAddAccountCat(this);
+            newCat.Show();
+        }
     }
 }

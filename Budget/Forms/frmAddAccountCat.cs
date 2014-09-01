@@ -11,8 +11,16 @@ using System.Windows.Forms;
 namespace budgetApp {
     public partial class frmAddAccountCat : Form {
         sqliteInterface db = new sqliteInterface();
+        private frmAddAccount parentForm;
         public frmAddAccountCat() {
             InitializeComponent();
+            lblStatus.Text = "";
+        }
+
+        public frmAddAccountCat( frmAddAccount parent = null) {
+            // TODO: Complete member initialization
+            InitializeComponent();
+            this.parentForm = parent;
             lblStatus.Text = "";
         }
         private void updateStatus( string message, bool error = true ) {
@@ -34,6 +42,7 @@ namespace budgetApp {
                 updateStatus("An error occurred.");
                 MessageBox.Show(e.ToString());
             }
+            this.parentForm.enableFormControls();
             return true;
         }
         /* event handlers */

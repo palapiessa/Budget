@@ -42,6 +42,7 @@
             this.nudInterest = new System.Windows.Forms.NumericUpDown();
             this.nudBalance = new System.Windows.Forms.NumericUpDown();
             this.lblStatus = new System.Windows.Forms.Label();
+            this.lblAddCat = new System.Windows.Forms.Label();
             this.mnuMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudInterest)).BeginInit();
@@ -58,7 +59,7 @@
             this.mnuMain.Location = new System.Drawing.Point(0, 0);
             this.mnuMain.Name = "mnuMain";
             this.mnuMain.Size = new System.Drawing.Size(550, 24);
-            this.mnuMain.TabIndex = 1;
+            this.mnuMain.TabIndex = 9;
             this.mnuMain.Text = "Main Menu";
             // 
             // menuToolStripMenuItem
@@ -74,7 +75,7 @@
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -151,7 +152,7 @@
             this.cmbCategories.Location = new System.Drawing.Point(182, 97);
             this.cmbCategories.Name = "cmbCategories";
             this.cmbCategories.Size = new System.Drawing.Size(345, 28);
-            this.cmbCategories.TabIndex = 2;
+            this.cmbCategories.TabIndex = 3;
             // 
             // txtUser
             // 
@@ -159,7 +160,7 @@
             this.txtUser.Location = new System.Drawing.Point(182, 147);
             this.txtUser.Name = "txtUser";
             this.txtUser.Size = new System.Drawing.Size(345, 26);
-            this.txtUser.TabIndex = 3;
+            this.txtUser.TabIndex = 4;
             // 
             // lblUserName
             // 
@@ -179,7 +180,7 @@
             this.btnAdd.Location = new System.Drawing.Point(302, 149);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(92, 41);
-            this.btnAdd.TabIndex = 6;
+            this.btnAdd.TabIndex = 7;
             this.btnAdd.Text = "Add Account";
             this.btnAdd.UseVisualStyleBackColor = true;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
@@ -191,13 +192,15 @@
             this.btnCancel.Location = new System.Drawing.Point(411, 149);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(85, 41);
-            this.btnCancel.TabIndex = 7;
+            this.btnCancel.TabIndex = 8;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // pnlMain
             // 
             this.pnlMain.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pnlMain.Controls.Add(this.lblAddCat);
             this.pnlMain.Controls.Add(this.nudInterest);
             this.pnlMain.Controls.Add(this.nudBalance);
             this.pnlMain.Controls.Add(this.lblStatus);
@@ -230,7 +233,7 @@
             -2147483648});
             this.nudInterest.Name = "nudInterest";
             this.nudInterest.Size = new System.Drawing.Size(106, 26);
-            this.nudInterest.TabIndex = 18;
+            this.nudInterest.TabIndex = 6;
             // 
             // nudBalance
             // 
@@ -254,7 +257,7 @@
             -2147483648});
             this.nudBalance.Name = "nudBalance";
             this.nudBalance.Size = new System.Drawing.Size(106, 26);
-            this.nudBalance.TabIndex = 4;
+            this.nudBalance.TabIndex = 5;
             // 
             // lblStatus
             // 
@@ -266,6 +269,20 @@
             this.lblStatus.Size = new System.Drawing.Size(121, 20);
             this.lblStatus.TabIndex = 17;
             this.lblStatus.Text = "Status Location";
+            // 
+            // lblAddCat
+            // 
+            this.lblAddCat.AutoSize = true;
+            this.lblAddCat.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.lblAddCat.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lblAddCat.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAddCat.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.lblAddCat.Location = new System.Drawing.Point(44, 54);
+            this.lblAddCat.Name = "lblAddCat";
+            this.lblAddCat.Size = new System.Drawing.Size(24, 26);
+            this.lblAddCat.TabIndex = 2;
+            this.lblAddCat.Text = "+";
+            this.lblAddCat.Click += new System.EventHandler(this.lblAddCat_Click);
             // 
             // frmAddAccount
             // 
@@ -318,5 +335,6 @@
         private System.Windows.Forms.NumericUpDown nudInterest;
         private System.Windows.Forms.ToolStripMenuItem addExpenseToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addBudgetCatToolStripMenuItem;
+        private System.Windows.Forms.Label lblAddCat;
     }
 }

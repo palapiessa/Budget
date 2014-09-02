@@ -8,14 +8,14 @@ using System.Windows.Forms;
 namespace budgetApp {
     class expense {
         // CREATE TABLE IF NOT EXISTS expenses (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, payTo TEXT, amount REAL, expenseDate TEXT, postedDate TEXT, notes TEXT, payingAccount INTEGER, budgetCat INTEGER)
-        public string payTo = "";
-        public int category = -1;
-        public int account = -1;
-        public int id = -1;
-        public string notes = "";
-        public DateTime postedDate;
-        public DateTime expenseDate;
-        public double amount = 0.00;
+        public string payTo { get; set; }
+        public int category { get; set; }
+        public int account { get; set; }
+        public int id { get; set; }
+        public string notes { get; set; }
+        public DateTime postedDate { get; set; }
+        public DateTime expenseDate { get; set; }
+        public double amount { get; set; }
 
         public expense() {
             this.payTo = "";

@@ -42,8 +42,45 @@ namespace budgetApp {
                 updateStatus("An error occurred.");
                 MessageBox.Show(e.ToString());
             }
-            this.parentForm.enableFormControls();
+            if (this.parentForm != null) {
+                this.parentForm.enableFormControls();
+            }
             return true;
+        }
+        /*  */
+        private void catchReturn() {
+            if (add()) {
+                updateStatus("Successfully added!", false);
+                lstCategories.Items.Add(txtCategory.Text);
+                txtCategory.Clear();
+                txtCategory.Focus();
+            }
+        }
+        private void loadCategories() {
+            List<string> cats = new List<string>();
+            cats = this.db.getAccountCategories();
+            lblStatus.Text = "";
+            lstCategories.Items.Clear();
+            foreach (string cat in cats) {
+                lstCategories.Items.Add(cat);
+            }
+
+        }
+        private void verifyRemoveCat(int category) {
+            string catName = lstCategories.Items[category].ToString(); // gets the string name of the category that was double clicked
+            DialogResult remove = MessageBox.Show("Are you sure you would like to remove " + catName + "?", "Confirm Category Deletion", MessageBoxButtons.YesNo);
+            if (remove == DialogResult.Yes) {
+                try {
+                    if (!this.db.removeAccountCat(catName)) {
+                        updateStatus("Database error");
+                    } else {
+                        updateStatus("Successfully removed", false);
+                        loadCategories();
+                    }
+                } catch {
+                    updateStatus("Unknown error");
+                }
+            }
         }
         /* event handlers */
         private void exitToolStripMenuItem_Click( object sender, EventArgs e ) {
@@ -51,10 +88,25 @@ namespace budgetApp {
         }
 
         private void btnAdd_Click( object sender, EventArgs e ) {
-            if (add()) {
-                updateStatus("Successfully added!", false);
-                txtCategory.Clear();
+            catchReturn();
+        }
+        private void keyHandler( object sender, KeyEventArgs e ) {
+            if (e.KeyCode == Keys.Enter) {
+                catchReturn();
             }
+        }
+
+        private void frmAddAccountCat_Load( object sender, EventArgs e ) {
+            loadCategories();
+        }
+
+        private void lstCategories_MouseDoubleClick( object sender, MouseEventArgs e ) {
+            verifyRemoveCat(this.lstCategories.IndexFromPoint(e.Location));
+            //MessageBox.Show(this.lstCategories.IndexFromPoint(e.Location).ToString());
+        }
+
+        private void btnClear_Click( object sender, EventArgs e ) {
+            txtCategory.Clear();
         }
     }
 }

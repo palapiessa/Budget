@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace budgetApp {
     class ledger {
         // CREATE TABLE IF NOT EXISTS ledger (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, balanceBefore REAL, balanceAfter REAL, expenseID INTEGER, incomeID INTEGER, accountID INTEGER, postedDate TEXT)
-        public int id = -1;
-        public double balanceBefore = 0.00;
-        public double balanceAfter = 0.00;
-        public int expenseID = -1;
-        public int incomeID = -1;
-        public int accountID = -1;
-        public DateTime postedDate;
+        public int id { get; set; }
+        public double balanceBefore { get; set; }
+        public double balanceAfter { get; set; }
+        public int expenseID { get; set; }
+        public int incomeID { get; set; }
+        public int accountID { get; set; }
+        public DateTime postedDate { get; set; }
 
         public ledger() {
             this.id = -1;

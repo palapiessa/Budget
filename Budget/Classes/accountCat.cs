@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace budgetApp {
     class accountCat {
         // CREATE TABLE IF NOT EXISTS account_Category (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT, postedDate TEXT)
-        public int id = -1;
-        public string name = "";
-        public DateTime postedDate;
+        public int id { get; set; }
+        public string name { get; set; }
+        public DateTime postedDate { get; set; }
 
         public accountCat() {
             this.id = -1;

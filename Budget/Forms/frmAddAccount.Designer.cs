@@ -39,10 +39,10 @@
             this.btnAdd = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.pnlMain = new System.Windows.Forms.Panel();
+            this.lblAddCat = new System.Windows.Forms.Label();
             this.nudInterest = new System.Windows.Forms.NumericUpDown();
             this.nudBalance = new System.Windows.Forms.NumericUpDown();
             this.lblStatus = new System.Windows.Forms.Label();
-            this.lblAddCat = new System.Windows.Forms.Label();
             this.mnuMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudInterest)).BeginInit();
@@ -75,7 +75,7 @@
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -111,6 +111,7 @@
             this.txtAccount.Name = "txtAccount";
             this.txtAccount.Size = new System.Drawing.Size(345, 26);
             this.txtAccount.TabIndex = 1;
+            this.txtAccount.KeyDown += new System.Windows.Forms.KeyEventHandler(this.fullForm_KeyDown);
             // 
             // lblBalance
             // 
@@ -161,6 +162,7 @@
             this.txtUser.Name = "txtUser";
             this.txtUser.Size = new System.Drawing.Size(345, 26);
             this.txtUser.TabIndex = 4;
+            this.txtUser.KeyDown += new System.Windows.Forms.KeyEventHandler(this.fullForm_KeyDown);
             // 
             // lblUserName
             // 
@@ -211,6 +213,20 @@
             this.pnlMain.Size = new System.Drawing.Size(526, 240);
             this.pnlMain.TabIndex = 16;
             // 
+            // lblAddCat
+            // 
+            this.lblAddCat.AutoSize = true;
+            this.lblAddCat.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.lblAddCat.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lblAddCat.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAddCat.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.lblAddCat.Location = new System.Drawing.Point(44, 54);
+            this.lblAddCat.Name = "lblAddCat";
+            this.lblAddCat.Size = new System.Drawing.Size(24, 26);
+            this.lblAddCat.TabIndex = 2;
+            this.lblAddCat.Text = "+";
+            this.lblAddCat.Click += new System.EventHandler(this.lblAddCat_Click);
+            // 
             // nudInterest
             // 
             this.nudInterest.DecimalPlaces = 2;
@@ -234,6 +250,7 @@
             this.nudInterest.Name = "nudInterest";
             this.nudInterest.Size = new System.Drawing.Size(106, 26);
             this.nudInterest.TabIndex = 6;
+            this.nudInterest.KeyDown += new System.Windows.Forms.KeyEventHandler(this.fullForm_KeyDown);
             // 
             // nudBalance
             // 
@@ -258,6 +275,7 @@
             this.nudBalance.Name = "nudBalance";
             this.nudBalance.Size = new System.Drawing.Size(106, 26);
             this.nudBalance.TabIndex = 5;
+            this.nudBalance.KeyDown += new System.Windows.Forms.KeyEventHandler(this.fullForm_KeyDown);
             // 
             // lblStatus
             // 
@@ -269,20 +287,6 @@
             this.lblStatus.Size = new System.Drawing.Size(121, 20);
             this.lblStatus.TabIndex = 17;
             this.lblStatus.Text = "Status Location";
-            // 
-            // lblAddCat
-            // 
-            this.lblAddCat.AutoSize = true;
-            this.lblAddCat.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.lblAddCat.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lblAddCat.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAddCat.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.lblAddCat.Location = new System.Drawing.Point(44, 54);
-            this.lblAddCat.Name = "lblAddCat";
-            this.lblAddCat.Size = new System.Drawing.Size(24, 26);
-            this.lblAddCat.TabIndex = 2;
-            this.lblAddCat.Text = "+";
-            this.lblAddCat.Click += new System.EventHandler(this.lblAddCat_Click);
             // 
             // frmAddAccount
             // 

@@ -16,16 +16,12 @@ namespace budgetApp {
             this.db.createDatabase();
             test();
         }
-        
         /* attempt to load ledger in a range */
         private void test() {
+            DateTime end = DateTime.Now;
+            DateTime start = DateTime.Now.AddDays(-30);
             string[] row = new string[] { "2014-08-08", "Test", (12.12).ToString(), (1910.15).ToString() };
             this.dgvLedger.Rows.Add(row);
-            /*row.Cells[0].Value = "2014-08-22";
-            row.Cells[1].Value = "Test";
-            row.Cells[2].Value = 12.12;
-            row.Cells[3].Value = 1910.15;
-            dgvLedger.Rows.Add(row);*/
         }
         /* event handlers */
         private void btnAccount_Click( object sender, EventArgs e ) {

@@ -63,8 +63,6 @@ namespace budgetApp {
                 return false;
             }
             //MessageBox.Show(newAccount.interest.ToString());
-
-            return true;
         }
         /* update the status label */
         public void updateStatus( string message, bool error ) {
@@ -91,6 +89,14 @@ namespace budgetApp {
                 switchFormControls(false);
             }
         }
+        /* cleans the form to default values */
+        private void clearForm() {
+            txtAccount.Text = "";
+            txtUser.Text = "";
+            nudBalance.Value = (decimal)0.00;
+            nudInterest.Value = (decimal)0.00;
+            cmbCategories.SelectedIndex = 0;
+        }
         /* enable or disable the controls for the form */
         private void switchFormControls( bool enable = true ) {
             if (!enable) {
@@ -109,13 +115,17 @@ namespace budgetApp {
                 nudInterest.Enabled = true;
             }
         }
-        /* event handlers */
-        private void btnAdd_Click( object sender, EventArgs e ) {
+        /* process the entered return */
+        public void catchReturn() {
             if (addAccount()) {
                 updateStatus("Successfully added!", false);
+                clearForm();
             }
         }
-        /* TODO: move this off the event handler */
+        /* event handlers */
+        private void btnAdd_Click( object sender, EventArgs e ) {
+            catchReturn();
+        }
         private void frmAddAccount_Load( object sender, EventArgs e ) {
             /* load category combobox with values */
             enableFormControls();
@@ -143,6 +153,12 @@ namespace budgetApp {
         private void lblAddCat_Click( object sender, EventArgs e ) {
             frmAddAccountCat newCat = new frmAddAccountCat(this);
             newCat.Show();
+        }
+        /* catch a key press and process it */
+        private void fullForm_KeyDown( object sender, KeyEventArgs e ) {
+            if (e.KeyCode == Keys.Enter) {
+                catchReturn();
+            }
         }
     }
 }

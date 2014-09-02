@@ -8,13 +8,13 @@ using System.Windows.Forms;
 namespace budgetApp {
     class account {
         // CREATE TABLE IF NOT EXISTS accounts (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT, balance REAL, interest REAL, primaryCat INTEGER, postedDate TEXT, userName TEXT)
-        public string name = "";
-        public int id = -1;
-        public int primaryCategory = -1;
-        public double interest = 0.00;
-        public double balance = 0.00;
-        public string userName = "";
-        public DateTime postedDate = DateTime.MinValue;
+        public string name { get; set; }
+        public int id { get; set; }
+        public int primaryCategory { get; set; }
+        public double interest { get; set; }
+        public double balance { get; set; }
+        public string userName { get; set; }
+        public DateTime postedDate { get; set; }
 
         public account() {
             this.name = "";

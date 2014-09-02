@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 namespace budgetApp {
     class income {
         // CREATE TABLE IF NOT EXISTS income (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT, accountCat INTEGER, amount REAL, postedDate TEXT)
-        public int id = -1;
-        public string name = "";
-        public int accountCat = -1;
-        public double amount = 0.00;
-        public DateTime postedDate;
+        public int id { get; set; }
+        public string name { get; set; }
+        public int accountCat { get; set; }
+        public double amount { get; set; }
+        public DateTime postedDate { get; set; }
 
         public income() {
             this.id = -1;

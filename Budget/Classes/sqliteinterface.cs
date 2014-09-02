@@ -241,6 +241,27 @@ namespace budgetApp
             }
             return value;
         }
+        /* Remove account category from database. */
+        public bool removeAccountCat( string name ) {
+            bool success = false;
+            string delete = "DELETE FROM account_Category WHERE name = @name";
+            using (dbConnection) {
+                dbConnection.Open();
+                using (SQLiteCommand remove = dbConnection.CreateCommand()) {
+                    remove.CommandText = delete;
+                    remove.Parameters.Add("@name", DbType.String).Value = name;
+                    try {
+                        remove.ExecuteNonQuery();
+                        success = true;
+                    } catch (SQLiteException e) {
+                        MessageBox.Show("An error occured removing " + name + " from database.\n" + e.ToString());
+                    } finally {
+                        dbConnection.Close();
+                    }
+                }
+            }
+            return success;
+        }
         /*****************\
         |* EXPENSE TABLE *|
         \*****************/
@@ -538,9 +559,8 @@ namespace budgetApp
             if (!addLedger(newLedger)) {
                 return false;
             }
-
+            /* update the ledgers */
             expense tempExpense = new expense();
-            /* SEE THE PATTERN ?!? */
             for (int i = 0; i < befores.Count; i++) {
                 tempExpense = getExpense(befores[i].expenseID);
                 tempBB = tempBA;
@@ -553,49 +573,6 @@ namespace budgetApp
                 }
             }
 
-            /*tempExpense = getExpense(befores[1].expenseID);
-            tempBB = tempBA;
-            tempBA = tempBB - tempExpense.amount;
-            befores[1].balanceBefore = tempBB;
-            befores[1].balanceAfter = tempBA;
-
-            tempExpense = getExpense(befores[2].expenseID);
-            tempBB = tempBA;
-            tempBA = tempBB - tempExpense.amount;
-            befores[2].balanceBefore = tempBB;
-            befores[2].balanceAfter = tempBA;*/
-
-            /* THE LOOP WILL END HERE */
-            //string pause = "";
-            /* loop through the original ledgers, updating balanceBefore and balanceAfter */
-            /* General algorithm:
-             * 1) Update balanceBefore to tempBA. Update tempBA = tempBA - expense.amount (will require a pull from DB)
-             * 2) Loop to next one
-             * 
-             * 1) Write an updateLedger function: updateLedger ( ledger l )
-             * 2) Write a get expenseAmount function: getExpenseAmount(int id) {} returns double with amount -- ALREADY HAVE ONE IDIOT
-             */
-
-
-
-            //expense newExpense = getExpense(newEntry.expenseID);
-            // ALTER * WHERE id = @firstID
-            //for (int i = 0; i < befores.Count; i++) {
-            //    query = "UPDATE ledger SET balanceBefore=@newBefore, balanceAfter=@newAfter, expenseID=@newExpense WHERE id = @id";
-            //    using (dbConnection) {
-            //        dbConnection.Open();
-            //        using (SQLiteCommand update = dbConnection.CreateCommand()) {
-            //            update.CommandText = query;
-            //            /* TODO - THIS LOGIC IS NOT CORRECT!!! */
-            //            update.Parameters.Add("@newBefore", DbType.Double).Value = befores[i].balanceBefore;
-            //            update.Parameters.Add("@newAfter", DbType.Double).Value = befores[i].balanceAfter;
-            //            update.Parameters.Add("@expenseID", DbType.Int32).Value = befores[i].expenseID;
-            //            update.Parameters.Add("@id", DbType.Int32).Value = befores[i].id;
-            //        }
-            //        dbConnection.Close();
-            //    }
-            //    MessageBox.Show(befores[i].expenseID.ToString());
-            //}
             return true;
         }
         /* updates a ledger */

@@ -29,19 +29,23 @@
             this.btnAccount = new System.Windows.Forms.Button();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.dgvLedger = new System.Windows.Forms.DataGridView();
-            this.dgvDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgvPayto = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgvAmount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgvBalance = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnViewExps = new System.Windows.Forms.Button();
             this.btnAddExpense = new System.Windows.Forms.Button();
             this.btnAddBudgetCat = new System.Windows.Forms.Button();
             this.btnAddAccountCat = new System.Windows.Forms.Button();
-            this.ledgerBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.btnTesting = new System.Windows.Forms.Button();
+            this.dateDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.receiveeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.amountDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.balanceDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.accountRegisterBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.ledgerBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.ledgerBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.mnuMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvLedger)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.accountRegisterBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ledgerBindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ledgerBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
@@ -85,53 +89,19 @@
             // 
             // dgvLedger
             // 
-            this.dgvLedger.AllowUserToAddRows = false;
-            this.dgvLedger.AllowUserToDeleteRows = false;
+            this.dgvLedger.AutoGenerateColumns = false;
             this.dgvLedger.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvLedger.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dgvDate,
-            this.dgvPayto,
-            this.dgvAmount,
-            this.dgvBalance});
+            this.dateDataGridViewTextBoxColumn,
+            this.receiveeDataGridViewTextBoxColumn,
+            this.amountDataGridViewTextBoxColumn,
+            this.balanceDataGridViewTextBoxColumn});
+            this.dgvLedger.DataSource = this.accountRegisterBindingSource;
             this.dgvLedger.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvLedger.Location = new System.Drawing.Point(0, 0);
             this.dgvLedger.Name = "dgvLedger";
-            this.dgvLedger.ReadOnly = true;
             this.dgvLedger.Size = new System.Drawing.Size(1614, 665);
-            this.dgvLedger.TabIndex = 6;
-            this.dgvLedger.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
-            // 
-            // dgvDate
-            // 
-            this.dgvDate.HeaderText = "Date";
-            this.dgvDate.MinimumWidth = 50;
-            this.dgvDate.Name = "dgvDate";
-            this.dgvDate.ReadOnly = true;
-            this.dgvDate.Width = 150;
-            // 
-            // dgvPayto
-            // 
-            this.dgvPayto.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dgvPayto.HeaderText = "Paid To";
-            this.dgvPayto.MinimumWidth = 50;
-            this.dgvPayto.Name = "dgvPayto";
-            this.dgvPayto.ReadOnly = true;
-            // 
-            // dgvAmount
-            // 
-            this.dgvAmount.HeaderText = "Amount";
-            this.dgvAmount.MinimumWidth = 50;
-            this.dgvAmount.Name = "dgvAmount";
-            this.dgvAmount.ReadOnly = true;
-            this.dgvAmount.Width = 150;
-            // 
-            // dgvBalance
-            // 
-            this.dgvBalance.HeaderText = "Balance";
-            this.dgvBalance.MinimumWidth = 50;
-            this.dgvBalance.Name = "dgvBalance";
-            this.dgvBalance.ReadOnly = true;
-            this.dgvBalance.Width = 150;
+            this.dgvLedger.TabIndex = 0;
             // 
             // btnViewExps
             // 
@@ -177,10 +147,6 @@
             this.btnAddAccountCat.UseVisualStyleBackColor = true;
             this.btnAddAccountCat.Click += new System.EventHandler(this.btnAddAccountCat_Click);
             // 
-            // ledgerBindingSource
-            // 
-            this.ledgerBindingSource.DataSource = typeof(budgetApp.ledger);
-            // 
             // btnTesting
             // 
             this.btnTesting.Location = new System.Drawing.Point(1636, 405);
@@ -190,6 +156,48 @@
             this.btnTesting.Text = "Test Button";
             this.btnTesting.UseVisualStyleBackColor = true;
             this.btnTesting.Click += new System.EventHandler(this.btnTesting_Click);
+            // 
+            // dateDataGridViewTextBoxColumn
+            // 
+            this.dateDataGridViewTextBoxColumn.DataPropertyName = "date";
+            this.dateDataGridViewTextBoxColumn.HeaderText = "Date";
+            this.dateDataGridViewTextBoxColumn.MinimumWidth = 100;
+            this.dateDataGridViewTextBoxColumn.Name = "dateDataGridViewTextBoxColumn";
+            this.dateDataGridViewTextBoxColumn.Width = 200;
+            // 
+            // receiveeDataGridViewTextBoxColumn
+            // 
+            this.receiveeDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.receiveeDataGridViewTextBoxColumn.DataPropertyName = "receivee";
+            this.receiveeDataGridViewTextBoxColumn.HeaderText = "Name";
+            this.receiveeDataGridViewTextBoxColumn.MinimumWidth = 70;
+            this.receiveeDataGridViewTextBoxColumn.Name = "receiveeDataGridViewTextBoxColumn";
+            // 
+            // amountDataGridViewTextBoxColumn
+            // 
+            this.amountDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.amountDataGridViewTextBoxColumn.DataPropertyName = "amount";
+            this.amountDataGridViewTextBoxColumn.HeaderText = "Transaction Amount";
+            this.amountDataGridViewTextBoxColumn.Name = "amountDataGridViewTextBoxColumn";
+            this.amountDataGridViewTextBoxColumn.Width = 146;
+            // 
+            // balanceDataGridViewTextBoxColumn
+            // 
+            this.balanceDataGridViewTextBoxColumn.DataPropertyName = "balance";
+            this.balanceDataGridViewTextBoxColumn.HeaderText = "Balance";
+            this.balanceDataGridViewTextBoxColumn.Name = "balanceDataGridViewTextBoxColumn";
+            // 
+            // accountRegisterBindingSource
+            // 
+            this.accountRegisterBindingSource.DataSource = typeof(budgetApp.accountRegister);
+            // 
+            // ledgerBindingSource1
+            // 
+            this.ledgerBindingSource1.DataSource = typeof(budgetApp.ledger);
+            // 
+            // ledgerBindingSource
+            // 
+            this.ledgerBindingSource.DataSource = typeof(budgetApp.ledger);
             // 
             // frmLanding
             // 
@@ -208,10 +216,13 @@
             this.MainMenuStrip = this.mnuMain;
             this.Name = "frmLanding";
             this.Text = "Home Page";
+            this.Load += new System.EventHandler(this.frmLanding_Load);
             this.mnuMain.ResumeLayout(false);
             this.mnuMain.PerformLayout();
             this.pnlMain.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvLedger)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.accountRegisterBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ledgerBindingSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ledgerBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -228,12 +239,14 @@
         private System.Windows.Forms.Button btnAddExpense;
         private System.Windows.Forms.Button btnAddBudgetCat;
         private System.Windows.Forms.Button btnAddAccountCat;
-        private System.Windows.Forms.DataGridView dgvLedger;
         private System.Windows.Forms.BindingSource ledgerBindingSource;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dgvDate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dgvPayto;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dgvAmount;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dgvBalance;
         private System.Windows.Forms.Button btnTesting;
+        private System.Windows.Forms.BindingSource ledgerBindingSource1;
+        private System.Windows.Forms.BindingSource accountRegisterBindingSource;
+        private System.Windows.Forms.DataGridView dgvLedger;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dateDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn receiveeDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn amountDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn balanceDataGridViewTextBoxColumn;
     }
 }

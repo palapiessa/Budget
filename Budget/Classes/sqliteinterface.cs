@@ -15,6 +15,12 @@ namespace budgetApp
         public sqliteInterface() {
             string connectionString = "Data Source=" + System.Windows.Forms.Application.StartupPath + "\\budget.db;Version=3";
             this.dbConnection = new SQLiteConnection(connectionString);
+            try {
+                this.dbConnection.Open();
+                this.dbConnection.Close();
+            } catch (SQLiteException e) {
+                MessageBox.Show("An exception occured with the SQLite Database\n" + e.ToString());
+            }
         }
         public void createDatabase() {
             //MessageBox.Show(System.Windows.Forms.Application.StartupPath.ToString());
@@ -598,5 +604,44 @@ namespace budgetApp
             }
             return value;
         }
+        /******************\
+        |* REGISTER TABLE *|
+        \******************/
+        public List<accountRegister> getRegisterInTimeFrame( DateTime start, DateTime end, account act ) {
+            List<accountRegister> registers = new List<accountRegister>();
+            string query = "SELECT l.postedDate AS [date], l.balanceAfter as [balance], " +
+                "CASE WHEN (l.expenseID = -1 AND l.incomeID = -1) THEN 'Account Opening' WHEN l.expenseID = -1 THEN i.Name ELSE e.payTo END AS [receivee], "+
+                "CASE WHEN (l.expenseID = -1 AND l.incomeID = -1) THEN l.BalanceAfter WHEN l.expenseID = -1 THEN i.amount ELSE e.amount END AS [amount] " +
+                "FROM ledger l LEFT OUTER JOIN expenses e ON e.ID = l.expenseID LEFT OUTER JOIN income i ON i.ID = l.incomeID " +
+                "WHERE l.postedDate BETWEEN @start AND @end AND l.AccountID = @account " +
+                "ORDER BY l.postedDate ASC";
+            try {
+                using (dbConnection) {
+                    dbConnection.Open();
+                    using (SQLiteCommand select = dbConnection.CreateCommand()) {
+                        select.CommandText = query;
+                        select.Parameters.Add("@start", DbType.Date).Value = start;
+                        select.Parameters.Add("@end", DbType.Date).Value = end;
+                        select.Parameters.Add("@account", DbType.Int32).Value = act.id;
+                        SQLiteDataReader response = select.ExecuteReader();
+                        while (response.Read()) {
+                            accountRegister temp = new accountRegister();
+                            temp.date = Convert.ToDateTime(response["date"]);
+                            temp.amount = string.Format("{0:C}", decimal.Parse(response["amount"].ToString()));
+                            temp.balance = string.Format("{0:C}", decimal.Parse(response["balance"].ToString()));
+                            temp.receivee = Convert.ToString(response["receivee"]);
+                            registers.Add(temp);
+                            temp = null;
+                        }
+                    }
+                }
+            } catch (SQLiteException e) {
+                MessageBox.Show("An error occured loading the ledger information.\n" + e.ToString());
+            } finally {
+                this.dbConnection.Close();
+            }
+            return registers;
+        }
+
     }    
 }

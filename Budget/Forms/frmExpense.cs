@@ -109,7 +109,7 @@ namespace budgetApp
             cmbCategory.SelectedIndex = 0;
             return;
         }
-        /* event handlers */
+        #region eventhandlers
         private void frmEnterExpense_Load(object sender, EventArgs e) {
             this.db = new sqliteInterface();
             this.db.createDatabase();
@@ -124,5 +124,6 @@ namespace budgetApp
                 resetInputs();
             }
         }
+        #endregion
     }
 }

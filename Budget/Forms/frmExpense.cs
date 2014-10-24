@@ -13,11 +13,17 @@ namespace budgetApp
     public partial class frmEnterExpense : Form
     {
         private sqliteInterface db = new sqliteInterface();
+        public event EventHandler newEntry;
+        protected virtual void OnNewEntry( object sender, EventArgs e ) {
+            // do something?
+            newEntry(this, e);
+        }
         public frmEnterExpense()
         {
             InitializeComponent();
             lblStatus.Text = "";
         }
+        #region methods
         /* update the status label */
         private void updateStatus( string message, bool error = true ) {
             if (error) {
@@ -109,6 +115,7 @@ namespace budgetApp
             cmbCategory.SelectedIndex = 0;
             return;
         }
+        #endregion
         #region eventhandlers
         private void frmEnterExpense_Load(object sender, EventArgs e) {
             this.db = new sqliteInterface();
@@ -122,6 +129,8 @@ namespace budgetApp
             } else {
                 updateStatus("Successfully added!", false);
                 resetInputs();
+                OnNewEntry(this, null);
+                this.Close();
             }
         }
         #endregion

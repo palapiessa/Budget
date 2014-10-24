@@ -138,11 +138,11 @@ namespace budgetApp
                     try {
                         response.Read();
                         a.name = response["name"].ToString();
-                        a.balance = (double)response["balance"];
-                        a.interest = (double)response["interest"];
-                        a.primaryCategory = (int)response["primaryCat"];
+                        a.balance = Convert.ToDouble(response["balance"]);
+                        a.interest = Convert.ToInt32(response["interest"]);
+                        a.primaryCategory = Convert.ToInt32(response["primaryCat"]);
                         a.userName = response["userName"].ToString();
-                        a.postedDate = (DateTime)response["postedDate"];
+                        a.postedDate = Convert.ToDateTime(response["postedDate"]);
                     } catch {
                         /* alert an error */
                     } finally {
@@ -467,7 +467,7 @@ namespace budgetApp
         public ledger getLastLedgerForAccount( int accountID ) {
             ledger l = new ledger();
             string query = "SELECT led.ID, led.balanceBefore, led.balanceAfter, led.expenseID, led.incomeID, led.accountID, led.postedDate FROM LEDGER led" +
-                " WHERE led.accountID = @accountID GROUP BY led.accountID HAVING led.postedDate = MAX(led.postedDate)";
+                " WHERE led.accountID = @accountID ORDER BY led.postedDate DESC LIMIT 1";
             using (dbConnection) {
                 dbConnection.Open();
                 using (SQLiteCommand select = dbConnection.CreateCommand()) {
@@ -489,25 +489,26 @@ namespace budgetApp
             return l;
         }
         /* returns a datetime with the first or last entry date for a ledger */
-        public DateTime getLedgerDate( int accountID, DateTime startTime, bool first = true ) {
+        public DateTime getMinLedgerDate( int accountID, DateTime startTime ) {
             DateTime initial = DateTime.MinValue;
-            string time = (first) ? "MIN" : "MAX";
-            string ending = (first) ? " AND led.postedDate > @start" : "";
-            string query = "SELECT " + time + "(led.postedDate)" + "AS [minDate] FROM ledger led WHERE led.accountID = @accountID" + ending;// +" AND led.expenseID <> -1";
+            string query = "SELECT MIN(led.postedDate)" + "AS [minDate] FROM ledger led WHERE led.accountID = @accountID AND led.postedDate > @start";// +" AND led.expenseID <> -1";
             using (dbConnection) {
                 dbConnection.Open();
                 using (SQLiteCommand select = dbConnection.CreateCommand()) {
                     select.CommandText = query;
                     select.Parameters.Add("@accountID", DbType.Int32).Value = accountID;
-                    if (first) { select.Parameters.Add("@start", DbType.DateTime).Value = startTime;  }
+                    select.Parameters.Add("@start", DbType.DateTime).Value = startTime;
                     SQLiteDataReader response = select.ExecuteReader();
                     if (response.HasRows) {
                         //MessageBox.Show(response["minDate"].ToString());
-                        initial = Convert.ToDateTime(response["minDate"]);
+                        if (response["minDate"] != null) {
+                            initial = Convert.ToDateTime(response["minDate"]);
+                        }
                     }
                 }
                 dbConnection.Close();
             }
+
             /* handle the case where the entered time is before the first expense date, but after the account creation */
             if (initial > startTime) {
                 initial = startTime;
@@ -517,8 +518,10 @@ namespace budgetApp
         /* updates balances approriately when the new expense entered has a posting date that is before another entry in the ledger table */
         public bool updateLedgersBeforeTimeFrame( expense newExpense ) {
             List<ledger> befores = new List<ledger>();
-            DateTime first = this.getLedgerDate(newExpense.account, newExpense.expenseDate);
-            DateTime last = this.getLedgerDate(newExpense.account, DateTime.Now, false);
+            DateTime first = this.getMinLedgerDate(newExpense.account, newExpense.expenseDate);
+            ledger lastLedger = new ledger();
+            lastLedger = this.getLastLedgerForAccount(newExpense.account);
+            DateTime last = lastLedger.postedDate;
             string query = "SELECT led.ID, led.balanceBefore, led.balanceAfter, led.expenseID, led.incomeID, led.accountID, led.postedDate FROM LEDGER led" +
                 " WHERE led.accountID = @accountID AND led.postedDate BETWEEN @first AND @last ORDER BY led.postedDate ASC";
             /* get a list of the ledgers from the new date to the last date in the ledger */

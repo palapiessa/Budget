@@ -13,10 +13,10 @@ namespace budgetApp {
     public partial class frmLanding : Form {
         #region initialization
         private sqliteInterface db = new sqliteInterface();
+
         public frmLanding() {
             InitializeComponent();
             this.db.createDatabase();
-            //test();
         }
         /* attempt to load ledger in a range */
         private void test() {
@@ -46,9 +46,12 @@ namespace budgetApp {
 
         private void btnAddExpense_Click( object sender, EventArgs e ) {
             frmEnterExpense newEX = new frmEnterExpense();
+            newEX.newEntry += new EventHandler(OnNewEntry);
             newEX.Show();
         }
-
+        private void OnNewEntry( object sender, EventArgs e ) {
+            this.loadRegister();
+        }
         private void btnViewExps_Click( object sender, EventArgs e ) {
             frmViewExpenses view = new frmViewExpenses();
             view.Show();
@@ -77,9 +80,14 @@ namespace budgetApp {
         
         #region methods
         private void loadRegister( DateTime start = default(DateTime), DateTime end = default(DateTime)) {
+            try {
+                this.dgvLedger.DataSource = null;
+            } catch {
+                // do nothing
+            }
             if (start == default(DateTime) && end == default(DateTime)) {
                 start = DateTime.Now.AddDays(-365);
-                end = DateTime.Now;
+                end = DateTime.Now.AddDays(+30);
             }
             account reqAccount = new account();
             // TODO : Tie the get account to a drop down or another control

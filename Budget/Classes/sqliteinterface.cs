@@ -640,6 +640,7 @@ namespace budgetApp
                 using (dbConnection) {
                     dbConnection.Open();
                     using (SQLiteCommand select = dbConnection.CreateCommand()) {
+                        
                         select.CommandText = query;
                         select.Parameters.Add("@start", DbType.Date).Value = start;
                         select.Parameters.Add("@end", DbType.Date).Value = end;

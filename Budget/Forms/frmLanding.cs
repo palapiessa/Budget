@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-
 namespace budgetApp {
     public partial class frmLanding : Form {
         #region initialization
@@ -18,6 +17,10 @@ namespace budgetApp {
 
         public frmLanding() {
             InitializeComponent();
+
+            queryBuilder test = new queryBuilder();
+            test.getQueryDetails("GetAccountByID");
+
             this.db.createDatabase();
             this.loadAccountsCombo();
             this.setInitalDates();

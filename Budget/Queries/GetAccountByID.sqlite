@@ -1,0 +1,3 @@
+﻿[[@id INT]]
+
+SELECT [name],[primaryCat],[interest],[balance],[userName],[postedDate] FROM accounts WHERE id = @id

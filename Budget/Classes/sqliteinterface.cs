@@ -9,8 +9,8 @@ using System.Windows.Forms;
 
 namespace budgetApp
 {
-    class sqliteInterface
-    {
+    class sqliteInterface {
+        #region SQLite Intialize
         public SQLiteConnection dbConnection = null;
         public sqliteInterface() {
             string connectionString = "Data Source=" + System.Windows.Forms.Application.StartupPath + "\\budget.db;Version=3";
@@ -95,6 +95,9 @@ namespace budgetApp
             }
             return payees;
         }
+        #endregion
+
+        #region Accounts
         /******************\
         |* ACCOUNTS TABLE *|
         \******************/
@@ -155,7 +158,7 @@ namespace budgetApp
         /* return a list of the accounts */
         public List<string> getAccounts() {
             List<string> accounts = new List<string>();
-            string query = "SELECT name FROM accounts";
+            string query = "SELECT name FROM accounts ORDER BY name ASC";
             using (dbConnection) {
                 dbConnection.Open();
                 using (SQLiteCommand select = dbConnection.CreateCommand()) {
@@ -187,6 +190,9 @@ namespace budgetApp
             }
             return accountID;
         }
+        #endregion
+
+        #region AccountCategory
         /**************************\
         |* ACCOUNT CATEGORY TABLE *|
         \**************************/
@@ -268,6 +274,9 @@ namespace budgetApp
             }
             return success;
         }
+        #endregion
+
+        #region Expenses
         /*****************\
         |* EXPENSE TABLE *|
         \*****************/
@@ -375,6 +384,9 @@ namespace budgetApp
             }
             return value;
         }
+        #endregion
+
+        #region BudgetCategory
         /*************************\
         |* BUDGET CATEGORY TABLE *|
         \*************************/
@@ -434,6 +446,9 @@ namespace budgetApp
             }
             return value;
         }
+        #endregion
+
+        #region Ledger
         /****************\
         |* LEDGER TABLE *|
         \****************/
@@ -573,7 +588,7 @@ namespace budgetApp
             for (int i = 0; i < befores.Count; i++) {
                 tempExpense = getExpense(befores[i].expenseID);
                 tempBB = tempBA;
-                tempBA = tempBB - tempExpense.amount;
+                tempBA = tempBB + tempExpense.amount;
                 befores[i].balanceBefore = tempBB;
                 befores[i].balanceAfter = tempBA;
                 if (!updateLedger(befores[i])) {
@@ -607,6 +622,9 @@ namespace budgetApp
             }
             return value;
         }
+        #endregion
+
+        #region Register
         /******************\
         |* REGISTER TABLE *|
         \******************/
@@ -629,7 +647,8 @@ namespace budgetApp
                         SQLiteDataReader response = select.ExecuteReader();
                         while (response.Read()) {
                             accountRegister temp = new accountRegister();
-                            temp.date = Convert.ToDateTime(response["date"]);
+                            DateTime tempDate = Convert.ToDateTime(response["date"]);
+                            temp.date = tempDate.Date.ToString("d");
                             temp.amount = string.Format("{0:C}", decimal.Parse(response["amount"].ToString()));
                             temp.balance = string.Format("{0:C}", decimal.Parse(response["balance"].ToString()));
                             temp.receivee = Convert.ToString(response["receivee"]);
@@ -645,6 +664,6 @@ namespace budgetApp
             }
             return registers;
         }
-
+        #endregion
     }    
 }

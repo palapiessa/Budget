@@ -68,7 +68,7 @@ namespace budgetApp {
                     return false;
                 }
             } else {
-                ledger newLed = new ledger(lastLed.balanceAfter, (lastLed.balanceAfter - this.amount), this.id, -1, this.account, this.expenseDate);
+                ledger newLed = new ledger(lastLed.balanceAfter, (lastLed.balanceAfter + this.amount), this.id, -1, this.account, this.expenseDate);
                 if (!db.addLedger(newLed)) {
                     return false;
                 }

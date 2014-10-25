@@ -13,14 +13,16 @@ namespace budgetApp
     public partial class frmEnterExpense : Form
     {
         private sqliteInterface db = new sqliteInterface();
+        private int accountID;
         public event EventHandler newEntry;
         protected virtual void OnNewEntry( object sender, EventArgs e ) {
             // do something?
             newEntry(this, e);
         }
-        public frmEnterExpense()
+        public frmEnterExpense(int accountID = -1)
         {
             InitializeComponent();
+            this.accountID = accountID;
             lblStatus.Text = "";
         }
         #region methods
@@ -43,7 +45,7 @@ namespace budgetApp
                     return false;
                 }
                 newExpense.payTo = cmbPayTo.Text;
-                newExpense.amount = Convert.ToDouble(nudAmount.Value);
+                newExpense.amount = Convert.ToDouble(nudAmount.Value) * -1;
                 newExpense.expenseDate = dtpPaidDate.Value;
                 newExpense.postedDate = DateTime.Now;
                 newExpense.notes = txtNotes.Text;
@@ -86,7 +88,9 @@ namespace budgetApp
             foreach (string account in accounts) {
                 cmbAccount.Items.Add(account);
             }
-            cmbAccount.SelectedIndex = 0;
+            account curAccount = this.db.getAccount(this.accountID);
+            cmbAccount.SelectedText = curAccount.name;
+            //cmbAccount.SelectedIndex = 0;
         }
         /* fill category combo box */
         private void loadCats() {

@@ -1,0 +1,3 @@
+﻿[[@balanceBefore REAL,@balanceAfter REAL,@expenseID INT,@incomeID INT,@accountID INT,@postedDate DATETIME]]
+
+INSERT INTO ledger (balanceBefore, balanceAfter, expenseID, incomeID, accountID, postedDate) VALUES(@balanceBefore, @balanceAfter, @expenseID, @incomeID, @accountID, @postedDate)

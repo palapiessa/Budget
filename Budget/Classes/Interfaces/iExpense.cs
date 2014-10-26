@@ -10,9 +10,6 @@ using System.Data.SQLite;
 namespace budgetApp {
     /* creates an interface to interact with the database, creating and returning expense objects, adding to the database, etc. */
     class iExpense : baseInterface {
-        private queryBuilder query = new queryBuilder();
-        private List<parameter> inputs = new List<parameter>();
-        private SQLiteDataReader response = null;
         public iExpense() {
             this.className = publicEnums.classType.expense;
         }
@@ -24,7 +21,7 @@ namespace budgetApp {
         /// </summary>
         /// <param name="expenseID"></param>
         /// <returns></returns>
-        public expense getExpense( int expenseID ) {
+        public expense getByID( int expenseID ) {
             expense temp = null;
             /* create parameter list */            
             parameter inp = new parameter("@ID", expenseID);
@@ -48,7 +45,7 @@ namespace budgetApp {
             return temp;
         }
 
-        public List<expense> getExpenseTimeFrame( DateTime start, DateTime end ) {
+        public List<expense> getByTimeFrame( DateTime start, DateTime end ) {
             List<expense> exps = new List<expense>();
             expense temp = null;
 
@@ -87,7 +84,7 @@ namespace budgetApp {
         /// </summary>
         /// <param name="accountID"></param>
         /// <returns></returns>
-        public int getLastExpenseID( int accountID ) {
+        public int getLastID( int accountID ) {
             int id = -1; // error
             parameter actID = new parameter("@accountID", accountID);
             this.inputs.Add(actID);
@@ -118,7 +115,7 @@ namespace budgetApp {
         /// </summary>
         /// <param name="newExpense"></param>
         /// <returns>True if the expense is successfully added, false if not</returns>
-        public bool insertExpense( expense newExpense ) {
+        public bool insert( expense newExpense ) {
             bool success = false;
             // generate a list of parameters from the object
             this.query.getQueryDetails(this.insertQuery());
@@ -148,6 +145,7 @@ namespace budgetApp {
         /// <returns>list of parameter object type</returns>
         private List<parameter> setParameters( expense ex ) {
             List<parameter> parameters = new List<parameter>();
+            parameter id = new parameter("@id", ex.id);
             parameter payTo = new parameter("@payTo", ex.payTo);
             parameter amount = new parameter("@amount", ex.amount);
             parameter postedDate = new parameter("@postedDate", ex.postedDate);
@@ -156,6 +154,7 @@ namespace budgetApp {
             parameter payingAccount = new parameter("@payingAccount", ex.account);
             parameter budgetCat = new parameter("@budgetCat", ex.category);
 
+            parameters.Add(id);
             parameters.Add(payTo);
             parameters.Add(amount);
             parameters.Add(postedDate);

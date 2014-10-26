@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.SQLite;
 
 namespace budgetApp {
     /* the most basic interface class, other interfaces will inherit from this one */
     class baseInterface {
         protected publicEnums.classType className = publicEnums.classType.none;
         protected sqliteInterface db = new sqliteInterface();
+        protected queryBuilder query = new queryBuilder();
+        protected List<parameter> inputs = new List<parameter>();
+        protected SQLiteDataReader response = null;
 
         /// <summary>
         /// Returns the name of the query responsible for pulling information from the database by the id of the object.
@@ -102,6 +106,16 @@ namespace budgetApp {
             switch (this.className) {
                 case publicEnums.classType.expense:
                     return "insertExpense";
+                case publicEnums.classType.ledger:
+                    return "insertLedger";
+            }
+            return "error";
+        }
+
+        protected string updateQuery() {
+            switch (this.className) {
+                case publicEnums.classType.ledger:
+                    return "updateLedger";
             }
             return "error";
         }

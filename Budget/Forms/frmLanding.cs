@@ -31,6 +31,11 @@ namespace budgetApp {
             this.loadAccountsCombo();
             this.setInitalDates();
             this.loadRegister();
+            iLedger test = new iLedger();
+            ledger led = new ledger();
+            led.id = 7;
+            led.balanceBefore = 100000.00;
+            test.update(led);
             //iExpense test = new iExpense();
             //MessageBox.Show(test.getLastExpenseID(1).ToString());
         }

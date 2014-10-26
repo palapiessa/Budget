@@ -1,0 +1,3 @@
+﻿[[@balanceBefore REAL,@balanceAfter REAL,@id INT]]
+
+UPDATE ledger SET balanceBefore=@balanceBefore, balanceAfter=@balanceAfter WHERE id = @id

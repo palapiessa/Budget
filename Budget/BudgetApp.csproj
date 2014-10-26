@@ -72,6 +72,7 @@
     <Compile Include="Classes\expense.cs" />
     <Compile Include="Classes\Interfaces\baseInterface.cs" />
     <Compile Include="Classes\Interfaces\iExpense.cs" />
+    <Compile Include="Classes\Interfaces\iLedger.cs" />
     <Compile Include="Classes\QueryBuilder\parameter.cs" />
     <Compile Include="Classes\QueryBuilder\queryBuilder.cs" />
     <Compile Include="Classes\QueryBuilder\queryParameter.cs" />
@@ -161,6 +162,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Queries\getExpenseDateRange.sqlite">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Queries\updateLedger.sqlite">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Queries\insertLedger.sqlite">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Queries\insertExpense.sqlite">

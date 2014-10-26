@@ -157,13 +157,19 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="Queries\InsertExpense.sqlite">
+    <None Include="Queries\getLastExpenseID.sqlite">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Queries\GetExpenseByID.sqlite">
+    <None Include="Queries\getExpenseDateRange.sqlite">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Queries\GetAccountByID.sqlite">
+    <None Include="Queries\insertExpense.sqlite">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Queries\getExpenseByID.sqlite">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Queries\getAccountByID.sqlite">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -18,7 +18,6 @@ namespace budgetApp {
         public frmLanding() {
             InitializeComponent();
 
-            //iExpense test = new iExpense();
             //expense test2 = new expense();
             //test.insertExpense(test2);
             //List<parameter> ps = new List<parameter>();
@@ -32,6 +31,8 @@ namespace budgetApp {
             this.loadAccountsCombo();
             this.setInitalDates();
             this.loadRegister();
+            //iExpense test = new iExpense();
+            //MessageBox.Show(test.getLastExpenseID(1).ToString());
         }
         /* attempt to load ledger in a range */
         private void test() {

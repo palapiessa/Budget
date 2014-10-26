@@ -11,10 +11,14 @@ namespace budgetApp {
     /* creates an interface to interact with the database, creating and returning expense objects, adding to the database, etc. */
     class iExpense : baseInterface {
         private queryBuilder query = new queryBuilder();
+        private List<parameter> inputs = new List<parameter>();
+        private SQLiteDataReader response = null;
         public iExpense() {
             this.className = publicEnums.classType.expense;
         }
+        #region Database Interaction
 
+        #region Selects
         /// <summary>
         /// Returns an expense from the database based on the passed in expense id
         /// </summary>
@@ -23,29 +27,92 @@ namespace budgetApp {
         public expense getExpense( int expenseID ) {
             expense temp = null;
             /* create parameter list */            
-            parameter inp = new parameter("@ID", expenseID.ToString());
-            List<parameter> inputs = new List<parameter>();
-            inputs.Add(inp);
+            parameter inp = new parameter("@ID", expenseID);
+            //List<parameter> inputs = new List<parameter>();
+            this.inputs.Add(inp);
 
             /* build the query */
             this.query.getQueryDetails(this.getByIDQuery());
-            this.query.addParameters(inputs);
+            this.query.addParameters(this.inputs);
             /* process the query and build the expense object */
             using (this.query.sqlConn) {
-                if (this.query.sqlConn.State == ConnectionState.Closed) {
-                    this.query.sqlConn.Open();
-                }
+                this.query.openConn();
                 using (this.query.command) {
-                    SQLiteDataReader response = this.query.command.ExecuteReader();
-                    response.Read();
-                    temp = new expense(response);
+                    this.response = this.query.command.ExecuteReader();
+                    this.response.Read();
+                    temp = new expense(this.response);
                 }
             }
-            if (this.query.sqlConn.State == ConnectionState.Open) {
-                this.query.sqlConn.Close();
-            }
+            this.query.closeConn();
+            this.inputs.Clear();
             return temp;
         }
+
+        public List<expense> getExpenseTimeFrame( DateTime start, DateTime end ) {
+            List<expense> exps = new List<expense>();
+            expense temp = null;
+
+            parameter pStart = new parameter("@start", start);
+            parameter pEnd = new parameter("@end", end);
+            this.inputs.Add(pStart);
+            this.inputs.Add(pEnd);
+            /* build query */
+            this.query.getQueryDetails(this.getByDateRange());
+            this.query.addParameters(this.inputs);
+            using (this.query.sqlConn) {
+                this.query.openConn();
+                using (this.query.command) {
+                    this.response = this.query.command.ExecuteReader();
+                    try {
+                        while (this.response.Read()) {
+                            temp = new expense(this.response);
+                            exps.Add(temp);
+                            temp = null;
+                        }
+                    } catch (SQLiteException e) {
+                        MessageBox.Show("An error occured reading from the database.\n\n" + e.ToString());
+                        exps.Clear();
+                    } finally {
+                        /* deconstruct */
+                        this.query.closeConn();
+                        this.inputs.Clear();
+                    }
+                }
+
+            }
+            return exps;
+        }
+        /// <summary>
+        /// Returns the last expense ID for a given account
+        /// </summary>
+        /// <param name="accountID"></param>
+        /// <returns></returns>
+        public int getLastExpenseID( int accountID ) {
+            int id = -1; // error
+            parameter actID = new parameter("@accountID", accountID);
+            this.inputs.Add(actID);
+
+            this.query.getQueryDetails(this.getLastID());
+            this.query.addParameters(this.inputs);
+            using (this.query.sqlConn) {
+                this.query.openConn();
+                using (this.query.command) {
+                    try {
+                        this.response = this.query.command.ExecuteReader();
+                        this.response.Read();
+                        id = Convert.ToInt32(this.response["id"]);
+                    } catch (SQLiteException e) {
+                        MessageBox.Show("An error occured loading the last expense from database.\n\n" + e.ToString());
+                    } finally {
+                        this.query.closeConn();
+                    }
+                }
+            }
+            return id;
+        }
+        #endregion
+
+        #region Insertions
         /// <summary>
         /// Inserts a new expense into the database.
         /// </summary>
@@ -57,22 +124,23 @@ namespace budgetApp {
             this.query.getQueryDetails(this.insertQuery());
             this.query.addParameters(setParameters(newExpense));
             using (this.query.sqlConn) {
-                if (this.query.sqlConn.State == ConnectionState.Closed) {
-                    this.query.sqlConn.Open();
-                }
+                this.query.openConn();
                 try {
                     this.query.command.ExecuteNonQuery();
                     success = true;
                 } catch (SQLiteException e) {
                     MessageBox.Show("An error occured write Expense to database.\n\n" + e.ToString());
                 } finally {
-                    if (this.query.sqlConn.State == ConnectionState.Open) {
-                        this.query.sqlConn.Close();
-                    }
+                    this.query.closeConn();
                 }
                 return success;
             }
         }
+        #endregion
+
+        #endregion
+
+        #region HelperFunctions
         /// <summary>
         /// Converts expense object into a list of parameters to be inserted into database.
         /// </summary>
@@ -81,12 +149,12 @@ namespace budgetApp {
         private List<parameter> setParameters( expense ex ) {
             List<parameter> parameters = new List<parameter>();
             parameter payTo = new parameter("@payTo", ex.payTo);
-            parameter amount = new parameter("@amount", ex.amount.ToString());
-            parameter postedDate = new parameter("@postedDate", ex.postedDate.ToString());
-            parameter expenseDate = new parameter("@expenseDate", ex.expenseDate.ToString());
+            parameter amount = new parameter("@amount", ex.amount);
+            parameter postedDate = new parameter("@postedDate", ex.postedDate);
+            parameter expenseDate = new parameter("@expenseDate", ex.expenseDate);
             parameter notes = new parameter("@notes", ex.notes);
-            parameter payingAccount = new parameter("@payingAccount", ex.account.ToString());
-            parameter budgetCat = new parameter("@budgetCat", ex.category.ToString());
+            parameter payingAccount = new parameter("@payingAccount", ex.account);
+            parameter budgetCat = new parameter("@budgetCat", ex.category);
 
             parameters.Add(payTo);
             parameters.Add(amount);
@@ -98,6 +166,6 @@ namespace budgetApp {
 
             return parameters;
         }
-
+        #endregion
     }
 }

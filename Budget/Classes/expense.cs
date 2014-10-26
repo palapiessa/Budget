@@ -75,7 +75,7 @@ namespace budgetApp {
         /*
          * TODO : Use the interface to interact, rather than direct access to sqliteinterface
          * Where to put this? Should every instance of expense have an interface? No...
-         * Give the entrance form access to the interface.
+         * Give the entry form access to the interface or create a controller that handles it. Not a fan of this one..
          */
         #region Methods
         public bool add(sqliteInterface db) {

@@ -1,0 +1,3 @@
+﻿[[@accountID INT]]
+
+SELECT e.ID FROM expenses e WHERE e.payingAccount = @accountID GROUP BY e.payingAccount HAVING e.postedDate = MAX(e.postedDate)

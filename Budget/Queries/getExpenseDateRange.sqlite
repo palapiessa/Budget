@@ -1,0 +1,3 @@
+﻿[[@start DATETIME,@end DATETIME]]
+
+SELECT id, payTo, amount, budgetCat, expenseDate, postedDate, payingAccount, notes FROM expenses e WHERE e.expenseDate BETWEEN @start AND @end ORDER BY e.expenseDate ASC

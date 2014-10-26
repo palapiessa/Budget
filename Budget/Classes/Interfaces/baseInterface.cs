@@ -9,6 +9,7 @@ namespace budgetApp {
     class baseInterface {
         protected publicEnums.classType className = publicEnums.classType.none;
         protected sqliteInterface db = new sqliteInterface();
+
         /// <summary>
         /// Returns the name of the query responsible for pulling information from the database by the id of the object.
         /// </summary>
@@ -81,7 +82,22 @@ namespace budgetApp {
             if (returnList) { queryName = queryName + "All"; }
             return queryName;
         }
-
+        protected string getByDateRange() {
+            switch (this.className) {
+                case publicEnums.classType.none:
+                    return "error";
+                case publicEnums.classType.expense:
+                    return "getExpenseDateRange";
+            }
+            return "error";
+        }
+        protected string getLastID() {
+            switch (this.className) {
+                case publicEnums.classType.expense:
+                    return "getLastExpenseID";
+            }
+            return "error";
+        }
         protected string insertQuery() {
             switch (this.className) {
                 case publicEnums.classType.expense:

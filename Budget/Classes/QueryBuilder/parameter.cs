@@ -23,5 +23,19 @@ namespace budgetApp {
             this.paramName = name;
             this.paramValue = value;
         }
+
+        public parameter( string name, int value ) {
+            this.paramName = name;
+            this.paramValue = value.ToString();
+        }
+        public parameter( string name, DateTime value ) {
+            this.paramName = name;
+            this.paramValue = value.ToString();
+        }
+
+        public parameter( string name, double value ) {
+            this.paramName = name;
+            this.paramValue = value.ToString();
+        }
     }
 }

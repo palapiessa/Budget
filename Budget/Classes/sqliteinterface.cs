@@ -22,6 +22,13 @@ namespace budgetApp
                 MessageBox.Show("An exception occured with the SQLite Database\n" + e.ToString());
             }
         }
+
+        public void closeConn() {
+            if (this.sqlConn.State == ConnectionState.Open) { this.sqlConn.Close(); }
+        }
+        public void openConn() {
+            if (this.sqlConn.State == ConnectionState.Closed) { this.sqlConn.Open(); }
+        }
         public void createDatabase() {
             //MessageBox.Show(System.Windows.Forms.Application.StartupPath.ToString());
             try {

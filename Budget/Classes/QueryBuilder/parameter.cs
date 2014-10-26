@@ -5,18 +5,23 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace budgetApp {
-    class queryParameter {
+    class parameter {
         private string _paramName;
-        private string _dataType;
+        private string _paramValue;
 
         public string paramName {
             get { return _paramName; }
             set { _paramName = value; }
         }
 
-        public string dataType {
-            get { return _dataType; }
-            set { _dataType = value; }
+        public string paramValue {
+            get { return _paramValue; }
+            set { _paramValue = value; }
+        }
+
+        public parameter( string name, string value ) {
+            this.paramName = name;
+            this.paramValue = value;
         }
     }
 }

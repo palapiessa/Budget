@@ -1,0 +1,3 @@
+﻿[[@payTo TEXT,@amount REAL,@expenseDate DATETIME,@postedDate DATETIME,@notes TEXT,@payingAccount INT,@budgetCat INT]]
+
+INSERT INTO expenses (payTo, amount, expenseDate, postedDate, notes, payingAccount, budgetCat) VALUES(@payTo, @amount, @expenseDate, @postedDate, @notes, @payingAccount, @budgetCat)

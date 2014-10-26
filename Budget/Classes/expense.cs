@@ -4,19 +4,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SQLite;
 
 namespace budgetApp {
     class expense {
-        // CREATE TABLE IF NOT EXISTS expenses (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, payTo TEXT, amount REAL, expenseDate TEXT, postedDate TEXT, notes TEXT, payingAccount INTEGER, budgetCat INTEGER)
-        public string payTo { get; set; }
-        public int category { get; set; }
-        public int account { get; set; }
-        public int id { get; set; }
-        public string notes { get; set; }
-        public DateTime postedDate { get; set; }
-        public DateTime expenseDate { get; set; }
-        public double amount { get; set; }
+        #region Initialization
+        private string _payTo;
+        private int _category;
+        private int _account;
+        private int _id;
+        private string _notes;
+        private DateTime _postedDate;
+        private DateTime _expenseDate;
+        private double _amount;
+        public string payTo { get { return _payTo;} set { _payTo = value; } }
+        public int category { get { return _category; } set { _category = value; } }
+        public int account { get { return _account; } set { _account = value; } }
+        public int id { get { return _id; } set { _id = value; } }
+        public string notes { get { return _notes; } set { _notes = value; } }
+        public DateTime postedDate { get { return _postedDate; } set { _postedDate = value; } }
+        public DateTime expenseDate { get { return _expenseDate; } set { _expenseDate = value; } }
+        public double amount { get { return _amount; } set { _amount = value; } }
+        #endregion
 
+        #region Constructors
         public expense() {
             this.payTo = "";
             this.category = -1;
@@ -49,6 +60,24 @@ namespace budgetApp {
             this.amount = amount;
         }
 
+        public expense( SQLiteDataReader response ) {
+            this.id = Convert.ToInt32(response["id"]); 
+            this.payTo = response["payTo"].ToString();
+            this.amount = Convert.ToDouble(response["amount"]);
+            this.category = Convert.ToInt32(response["budgetCat"]);
+            this.account = Convert.ToInt32(response["payingAccount"]);
+            this.notes = response["notes"].ToString();
+            this.postedDate = Convert.ToDateTime(response["postedDate"]);
+            this.expenseDate = Convert.ToDateTime(response["expenseDate"]);
+        }
+        #endregion
+
+        /*
+         * TODO : Use the interface to interact, rather than direct access to sqliteinterface
+         * Where to put this? Should every instance of expense have an interface? No...
+         * Give the entrance form access to the interface.
+         */
+        #region Methods
         public bool add(sqliteInterface db) {
             /* sqlite code to add expense to the database */
             /* need to pull the catid and account id to make sure those are the ones that get posted */
@@ -75,5 +104,6 @@ namespace budgetApp {
             }
             return true;
         }
+        #endregion
     }
 }

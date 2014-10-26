@@ -66,7 +66,6 @@ namespace budgetApp
                 MessageBox.Show(e.ToString());
                 return false;
             }
-            return true;
         }
         /* fill payees combo box */
         private void loadPayees() {

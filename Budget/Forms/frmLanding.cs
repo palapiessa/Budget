@@ -18,8 +18,15 @@ namespace budgetApp {
         public frmLanding() {
             InitializeComponent();
 
-            queryBuilder test = new queryBuilder();
-            test.getQueryDetails("GetAccountByID");
+            //iExpense test = new iExpense();
+            //expense test2 = new expense();
+            //test.insertExpense(test2);
+            //List<parameter> ps = new List<parameter>();
+            //parameter p = new parameter("@ID", "1");
+            //ps.Add(p);
+            //test.getExpense(1);
+            /*queryBuilder test = new queryBuilder();
+            test.getQueryDetails("GetAccountByID");*/
 
             this.db.createDatabase();
             this.loadAccountsCombo();

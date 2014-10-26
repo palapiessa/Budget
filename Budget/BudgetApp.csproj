@@ -72,6 +72,7 @@
     <Compile Include="Classes\expense.cs" />
     <Compile Include="Classes\Interfaces\baseInterface.cs" />
     <Compile Include="Classes\Interfaces\iExpense.cs" />
+    <Compile Include="Classes\QueryBuilder\parameter.cs" />
     <Compile Include="Classes\QueryBuilder\queryBuilder.cs" />
     <Compile Include="Classes\QueryBuilder\queryParameter.cs" />
     <Compile Include="Classes\QueryBuilder\queryResponse.cs" />
@@ -156,6 +157,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Queries\InsertExpense.sqlite">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Queries\GetExpenseByID.sqlite">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Queries\GetAccountByID.sqlite">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

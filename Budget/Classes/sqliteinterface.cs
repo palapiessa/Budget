@@ -11,13 +11,13 @@ namespace budgetApp
 {
     class sqliteInterface {
         #region SQLite Intialize
-        public SQLiteConnection dbConnection = null;
+        public SQLiteConnection sqlConn = null;
         public sqliteInterface() {
             string connectionString = "Data Source=" + System.Windows.Forms.Application.StartupPath + "\\budget.db;Version=3";
-            this.dbConnection = new SQLiteConnection(connectionString);
+            this.sqlConn = new SQLiteConnection(connectionString);
             try {
-                this.dbConnection.Open();
-                this.dbConnection.Close();
+                this.sqlConn.Open();
+                this.sqlConn.Close();
             } catch (SQLiteException e) {
                 MessageBox.Show("An exception occured with the SQLite Database\n" + e.ToString());
             }
@@ -25,11 +25,11 @@ namespace budgetApp
         public void createDatabase() {
             //MessageBox.Show(System.Windows.Forms.Application.StartupPath.ToString());
             try {
-                dbConnection.Open();
+                sqlConn.Open();
                 createTables();
                 ///* check for tables */
                 //string query = "SELECT name FROM sqlite_master WHERE type='table' AND name='accounts'";
-                //using (SQLiteCommand check = dbConnection.CreateCommand()) {
+                //using (SQLiteCommand check = sqlConn.CreateCommand()) {
                 //    check.CommandText = query;
                 //    try {
                 //        SQLiteDataReader response = check.ExecuteReader();
@@ -37,7 +37,7 @@ namespace budgetApp
                 //            MessageBox.Show("Table does not exist.");
                 //            /* create table */
                 //            query = "CREATE TABLE IF NOT EXISTS accounts (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT, balance REAL, interest REAL, primaryCat INTEGER, postedDate TEXT, userName TEXT)";
-                //            using (SQLiteCommand create = dbConnection.CreateCommand()) {
+                //            using (SQLiteCommand create = sqlConn.CreateCommand()) {
                 //                create.CommandText = query;
                 //                try {
                 //                    create.ExecuteNonQuery();
@@ -51,7 +51,7 @@ namespace budgetApp
                 //        MessageBox.Show(e.ToString());
                 //    }
                 //}
-                dbConnection.Close();
+                sqlConn.Close();
             } catch (Exception e) {
                 MessageBox.Show("There was an issue creating the database.\n" + e.ToString());
             }
@@ -68,7 +68,7 @@ namespace budgetApp
             tables.Add("CREATE TABLE IF NOT EXISTS income (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT, accountCat INTEGER, amount REAL, postedDate TEXT)");
             tables.Add("CREATE TABLE IF NOT EXISTS ledger (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, balanceBefore REAL, balanceAfter REAL, expenseID INTEGER, incomeID INTEGER, accountID INTEGER, postedDate TEXT)");
             foreach (string table in tables) {
-                using (SQLiteCommand create = dbConnection.CreateCommand()) {
+                using (SQLiteCommand create = sqlConn.CreateCommand()) {
                     create.CommandText = table;
                     try {
                         create.ExecuteNonQuery();
@@ -82,16 +82,16 @@ namespace budgetApp
         public List<string> getPayees() {
             List<string> payees = new List<string>();
             string query = "SELECT DISTINCT payTo FROM expenses";
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand select = sqlConn.CreateCommand()) {
                     select.CommandText = query;
                     SQLiteDataReader response = select.ExecuteReader();
                     while (response.Read()) {
                         payees.Add(response["payTo"].ToString());
                     }
                 }
-                dbConnection.Close();
+                sqlConn.Close();
             }
             return payees;
         }
@@ -104,9 +104,9 @@ namespace budgetApp
         public bool addAccount( account newAccount ) {
             string insertQuery = "INSERT INTO accounts (name, primaryCat, interest, balance, userName, postedDate)" +
                 " VALUES(@name, @primaryCat, @interest, @balance, @userName, @postedDate)";
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand add = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand add = sqlConn.CreateCommand()) {
                     add.CommandText = insertQuery;
                     add.Parameters.Add("@name", DbType.String).Value = newAccount.name;
                     add.Parameters.Add("@primaryCat", DbType.Int16).Value = newAccount.primaryCategory;
@@ -118,10 +118,10 @@ namespace budgetApp
                         add.ExecuteNonQuery();
                     } catch (SQLiteException e) {
                         MessageBox.Show("There was an error adding to the database.\n" + e.ToString());
-                        dbConnection.Close();
+                        sqlConn.Close();
                         return false;
                     } finally {
-                        dbConnection.Close();
+                        sqlConn.Close();
                     }
                 }
             }
@@ -132,9 +132,9 @@ namespace budgetApp
             account a = new account();
             a.id = id;
             string query = "SELECT name, primaryCat, interest, balance, userName, postedDate FROM accounts WHERE id = @id";
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand select = sqlConn.CreateCommand()) {
                     select.CommandText = query;
                     select.Parameters.Add("@id", DbType.String).Value = a.id;
                     SQLiteDataReader response = select.ExecuteReader();
@@ -149,7 +149,7 @@ namespace budgetApp
                     } catch {
                         /* alert an error */
                     } finally {
-                        dbConnection.Close();
+                        sqlConn.Close();
                     }
                 }
             }
@@ -159,16 +159,16 @@ namespace budgetApp
         public List<string> getAccounts() {
             List<string> accounts = new List<string>();
             string query = "SELECT name FROM accounts ORDER BY name ASC";
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand select = sqlConn.CreateCommand()) {
                     select.CommandText = query;
                     SQLiteDataReader response = select.ExecuteReader();
                     while (response.Read()) {
                         accounts.Add(response["name"].ToString());
                     }
                 }
-                dbConnection.Close();
+                sqlConn.Close();
             }
             return accounts;
         }
@@ -176,9 +176,9 @@ namespace budgetApp
         public int getAccountID( string name ) {
             string query = "SELECT id FROM accounts WHERE name = @name";
             int accountID = -1;
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand select = sqlConn.CreateCommand()) {
                     select.CommandText = query;
                     select.Parameters.Add("@name", DbType.String).Value = name;
                     SQLiteDataReader response = select.ExecuteReader();
@@ -186,7 +186,7 @@ namespace budgetApp
                         accountID = Convert.ToInt32(response["id"]);
                     }
                 }
-                dbConnection.Close();
+                sqlConn.Close();
             }
             return accountID;
         }
@@ -200,16 +200,16 @@ namespace budgetApp
         public List<string> getAccountCategories() {
             List<string> cats = new List<string>();
             string query = "SELECT name FROM account_Category";
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand select = sqlConn.CreateCommand()) {
                     select.CommandText = query;
                     SQLiteDataReader response = select.ExecuteReader();
                     while (response.Read()) {
                         cats.Add(response["name"].ToString());
                     }
                 }
-                dbConnection.Close();
+                sqlConn.Close();
             }
             return cats;
         }
@@ -217,9 +217,9 @@ namespace budgetApp
         public int getAccountCatID( string name ) {
             string query = "SELECT id FROM account_Category WHERE name = @name";
             int value = -1;
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand select = sqlConn.CreateCommand()) {
                     select.CommandText = query;
                     select.Parameters.Add("@name", DbType.String).Value = name;
                     SQLiteDataReader response = select.ExecuteReader();
@@ -227,7 +227,7 @@ namespace budgetApp
                         value = Convert.ToInt16(response["id"]);
                     }
                 }
-                dbConnection.Close();
+                sqlConn.Close();
             }
             return value;
         }
@@ -235,9 +235,9 @@ namespace budgetApp
         public bool addAccountCat(accountCat newCat) {
             bool value = false;
             string insertQuery = "INSERT INTO account_Category (name, postedDate) VALUES (@name, @postedDate)";
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand insert = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand insert = sqlConn.CreateCommand()) {
                     insert.CommandText = insertQuery;
                     insert.Parameters.Add("@name", DbType.String).Value = newCat.name;
                     insert.Parameters.Add("@postedDate", DbType.DateTime).Value = newCat.postedDate;
@@ -247,7 +247,7 @@ namespace budgetApp
                     } catch (SQLiteException e) {
                         MessageBox.Show("An error occurred writing to the database.\n" + e.ToString());
                     } finally {
-                        dbConnection.Close();
+                        sqlConn.Close();
                     }
                 }
             }
@@ -257,9 +257,9 @@ namespace budgetApp
         public bool removeAccountCat( string name ) {
             bool success = false;
             string delete = "DELETE FROM account_Category WHERE name = @name";
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand remove = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand remove = sqlConn.CreateCommand()) {
                     remove.CommandText = delete;
                     remove.Parameters.Add("@name", DbType.String).Value = name;
                     try {
@@ -268,7 +268,7 @@ namespace budgetApp
                     } catch (SQLiteException e) {
                         MessageBox.Show("An error occured removing " + name + " from database.\n" + e.ToString());
                     } finally {
-                        dbConnection.Close();
+                        sqlConn.Close();
                     }
                 }
             }
@@ -284,9 +284,9 @@ namespace budgetApp
         public int getLastExpenseID( int accountID ) {
             int value = -1;
             string query = "SELECT e.ID FROM expenses e WHERE e.payingAccount = @accountID GROUP BY e.payingAccount HAVING e.postedDate = MAX(e.postedDate)";
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand select = sqlConn.CreateCommand()) {
                     select.Parameters.Add("@accountID", DbType.Int32).Value = accountID;
                     select.CommandText = query;
                     SQLiteDataReader response = select.ExecuteReader();
@@ -295,7 +295,7 @@ namespace budgetApp
                         //MessageBox.Show(value.ToString());
                     }
                 }
-                dbConnection.Close();
+                sqlConn.Close();
             }
             return value;
         }
@@ -304,9 +304,9 @@ namespace budgetApp
             expense e = new expense();
             e.id = id;
             string query = "SELECT payTo, amount, budgetCat, expenseDate, postedDate, payingAccount, notes FROM expenses e WHERE e.id = @id";
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand select = sqlConn.CreateCommand()) {
                     select.Parameters.Add("@id", DbType.Int32).Value = id;
                     select.CommandText = query;
                     select.CommandType = System.Data.CommandType.Text;
@@ -320,7 +320,7 @@ namespace budgetApp
                     e.postedDate = Convert.ToDateTime(response["postedDate"]);
                     e.expenseDate = Convert.ToDateTime(response["expenseDate"]);
                 }
-                dbConnection.Close();
+                sqlConn.Close();
             }
             return e;
         }
@@ -328,9 +328,9 @@ namespace budgetApp
         public List<expense> getExpenseTimeFrame( DateTime start, DateTime end ) {
             List<expense> exps = new List<expense>();
             string query = "SELECT payTo, amount, budgetCat, expenseDate, postedDate, payingAccount, notes FROM expenses e WHERE e.expenseDate BETWEEN @start AND @end ORDER BY e.expenseDate ASC";
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand select = sqlConn.CreateCommand()) {
                     select.CommandText = query;
                     select.Parameters.Add("@start", DbType.DateTime).Value = start;
                     select.Parameters.Add("@end", DbType.DateTime).Value = end;
@@ -351,7 +351,7 @@ namespace budgetApp
                         MessageBox.Show("An error occurred reading from the database.\n" + e.ToString());
                         exps.Clear();
                     } finally {
-                        dbConnection.Close();
+                        sqlConn.Close();
                     }
                 }
             }
@@ -361,9 +361,9 @@ namespace budgetApp
         public bool addExpense( expense newExpense ) {
             string query = "INSERT INTO expenses (payTo, amount, expenseDate, postedDate, notes, payingAccount, budgetCat) VALUES(@payTo, @amount, @expenseDate, @postedDate, @notes, @payingAccount, @budgetCat)";
             bool value = false;
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand insert = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand insert = sqlConn.CreateCommand()) {
                     insert.CommandText = query;
                     insert.Parameters.Add("@payTo", DbType.String).Value = newExpense.payTo;
                     insert.Parameters.Add("@amount", DbType.Double).Value = newExpense.amount;
@@ -378,7 +378,7 @@ namespace budgetApp
                     } catch (SQLiteException e) {
                         MessageBox.Show("An error occurred writing to the database.\n" + e.ToString());
                     } finally {
-                        dbConnection.Close();
+                        sqlConn.Close();
                     }
                 }
             }
@@ -393,16 +393,16 @@ namespace budgetApp
         public List<string> getBudgetCats() {
             List<string> cats = new List<string>();
             string query = "SELECT name FROM budget_Category";
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand select = sqlConn.CreateCommand()) {
                     select.CommandText = query;
                     SQLiteDataReader response = select.ExecuteReader();
                     while (response.Read()) {
                         cats.Add(response["name"].ToString());
                     }
                 }
-                dbConnection.Close();
+                sqlConn.Close();
             }
             return cats;
         }
@@ -410,9 +410,9 @@ namespace budgetApp
         public int getBudgetCategoryID( string name ) {
             string query = "SELECT id FROM budget_Category WHERE name = @name";
             int id = -1;
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand select = sqlConn.CreateCommand()) {
                     select.CommandText = query;
                     select.Parameters.Add("@name", DbType.String).Value = name;
                     SQLiteDataReader response = select.ExecuteReader();
@@ -420,7 +420,7 @@ namespace budgetApp
                         id = Convert.ToInt16(response["id"]);
                     }
                 }
-                dbConnection.Close();
+                sqlConn.Close();
             }
             return id;
         }
@@ -428,9 +428,9 @@ namespace budgetApp
         public bool addBudgetCategory( budgetCat bc ) {
             string query = "INSERT INTO budget_Category (name, postedDate) VALUES(@name, @postedDate)";
             bool value = false;
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand insert = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand insert = sqlConn.CreateCommand()) {
                     insert.CommandText = query;
                     insert.Parameters.Add("@name", DbType.String).Value = bc.name;
                     insert.Parameters.Add("@postedDate", DbType.DateTime).Value = bc.postedDate;
@@ -440,7 +440,7 @@ namespace budgetApp
                     } catch (SQLiteException e) {
                         MessageBox.Show("An error occurred writing to the database.\n" + e.ToString());
                     } finally {
-                        dbConnection.Close();
+                        sqlConn.Close();
                     }
                 }
             }
@@ -456,9 +456,9 @@ namespace budgetApp
         public bool addLedger( ledger l ) {
             string query = "INSERT INTO ledger (balanceBefore, balanceAfter, expenseID, incomeID, accountID, postedDate) VALUES(@balanceBefore, @balanceAfter, @expenseID, @incomeID, @accountID, @postedDate)";
             bool value = false;
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand insert = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand insert = sqlConn.CreateCommand()) {
                     insert.CommandText = query;
                     insert.Parameters.Add("@balanceBefore", DbType.Double).Value = l.balanceBefore;
                     insert.Parameters.Add("@balanceAfter", DbType.Double).Value = l.balanceAfter;
@@ -472,7 +472,7 @@ namespace budgetApp
                     } catch (SQLiteException e) {
                         MessageBox.Show("An error occurred writing to the database.\n" + e.ToString());
                     } finally {
-                        dbConnection.Close();
+                        sqlConn.Close();
                     }
                 }
             }
@@ -483,9 +483,9 @@ namespace budgetApp
             ledger l = new ledger();
             string query = "SELECT led.ID, led.balanceBefore, led.balanceAfter, led.expenseID, led.incomeID, led.accountID, led.postedDate FROM LEDGER led" +
                 " WHERE led.accountID = @accountID ORDER BY led.postedDate DESC LIMIT 1";
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand select = sqlConn.CreateCommand()) {
                     select.CommandText = query;
                     select.Parameters.Add("@accountID", DbType.Int32).Value = accountID;
                     SQLiteDataReader response = select.ExecuteReader();
@@ -499,7 +499,7 @@ namespace budgetApp
                         l.postedDate = Convert.ToDateTime(response["postedDate"]);
                     }
                 }
-                dbConnection.Close();
+                sqlConn.Close();
             }
             return l;
         }
@@ -507,9 +507,9 @@ namespace budgetApp
         public DateTime getMinLedgerDate( int accountID, DateTime startTime ) {
             DateTime initial = DateTime.MinValue;
             string query = "SELECT MIN(led.postedDate)" + "AS [minDate] FROM ledger led WHERE led.accountID = @accountID AND led.postedDate > @start";// +" AND led.expenseID <> -1";
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand select = sqlConn.CreateCommand()) {
                     select.CommandText = query;
                     select.Parameters.Add("@accountID", DbType.Int32).Value = accountID;
                     select.Parameters.Add("@start", DbType.DateTime).Value = startTime;
@@ -521,7 +521,7 @@ namespace budgetApp
                         }
                     }
                 }
-                dbConnection.Close();
+                sqlConn.Close();
             }
 
             /* handle the case where the entered time is before the first expense date, but after the account creation */
@@ -540,9 +540,9 @@ namespace budgetApp
             string query = "SELECT led.ID, led.balanceBefore, led.balanceAfter, led.expenseID, led.incomeID, led.accountID, led.postedDate FROM LEDGER led" +
                 " WHERE led.accountID = @accountID AND led.postedDate BETWEEN @first AND @last ORDER BY led.postedDate ASC";
             /* get a list of the ledgers from the new date to the last date in the ledger */
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand select = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand select = sqlConn.CreateCommand()) {
                     select.CommandText = query;
                     select.Parameters.Add("@accountID", DbType.Int32).Value = newExpense.account;
                     select.Parameters.Add("@first", DbType.DateTime).Value = first;
@@ -561,7 +561,7 @@ namespace budgetApp
                         befores.Add(temp);
                     }
                 }
-                dbConnection.Close();
+                sqlConn.Close();
             }
 
             //return false;
@@ -603,9 +603,9 @@ namespace budgetApp
         public bool updateLedger(ledger l) {
             bool value = false;
             string query = "UPDATE ledger SET balanceBefore=@newBefore, balanceAfter=@newAfter WHERE id = @id";
-            using (dbConnection) {
-                dbConnection.Open();
-                using (SQLiteCommand update = dbConnection.CreateCommand()) {
+            using (sqlConn) {
+                sqlConn.Open();
+                using (SQLiteCommand update = sqlConn.CreateCommand()) {
                     update.CommandText = query;
                     update.Parameters.Add("@newBefore", DbType.Double).Value = l.balanceBefore;
                     update.Parameters.Add("@newAfter", DbType.Double).Value = l.balanceAfter;
@@ -616,7 +616,7 @@ namespace budgetApp
                     } catch (SQLiteException e) {
                         MessageBox.Show("An error occurred writing to database.\n" + e.ToString());
                     } finally {
-                        dbConnection.Close();
+                        sqlConn.Close();
                     }
                 }
             }
@@ -637,9 +637,9 @@ namespace budgetApp
                 "WHERE l.postedDate BETWEEN @start AND @end AND l.AccountID = @account " +
                 "ORDER BY l.postedDate ASC";
             try {
-                using (dbConnection) {
-                    dbConnection.Open();
-                    using (SQLiteCommand select = dbConnection.CreateCommand()) {
+                using (sqlConn) {
+                    sqlConn.Open();
+                    using (SQLiteCommand select = sqlConn.CreateCommand()) {
                         
                         select.CommandText = query;
                         select.Parameters.Add("@start", DbType.Date).Value = start;
@@ -661,7 +661,7 @@ namespace budgetApp
             } catch (SQLiteException e) {
                 MessageBox.Show("An error occured loading the ledger information.\n" + e.ToString());
             } finally {
-                this.dbConnection.Close();
+                this.sqlConn.Close();
             }
             return registers;
         }

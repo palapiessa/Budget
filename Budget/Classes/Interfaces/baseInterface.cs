@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace budgetApp.Classes.Interfaces {
+namespace budgetApp {
     /* the most basic interface class, other interfaces will inherit from this one */
     class baseInterface {
         protected publicEnums.classType className = publicEnums.classType.none;
@@ -80,6 +80,14 @@ namespace budgetApp.Classes.Interfaces {
             // different queries for one object vs all of them, append All to make sure a list is going to be returned
             if (returnList) { queryName = queryName + "All"; }
             return queryName;
+        }
+
+        protected string insertQuery() {
+            switch (this.className) {
+                case publicEnums.classType.expense:
+                    return "insertExpense";
+            }
+            return "error";
         }
     }
 }

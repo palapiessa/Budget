@@ -513,7 +513,7 @@ namespace budgetApp
         /* returns a datetime with the first or last entry date for a ledger */
         public DateTime getMinLedgerDate( int accountID, DateTime startTime ) {
             DateTime initial = DateTime.MinValue;
-            string query = "SELECT MIN(led.postedDate)" + "AS [minDate] FROM ledger led WHERE led.accountID = @accountID AND led.postedDate > @start";// +" AND led.expenseID <> -1";
+            string query = "SELECT MIN(led.postedDate) AS [minDate] FROM ledger led WHERE led.accountID = @accountID AND led.postedDate > @start";// +" AND led.expenseID <> -1";
             using (sqlConn) {
                 sqlConn.Open();
                 using (SQLiteCommand select = sqlConn.CreateCommand()) {

@@ -84,6 +84,8 @@ namespace budgetApp {
             if (!db.addExpense(this)) {
                 return false;
             }
+
+            /* TODO : FROM HERE CODE NEEDS TO BE CONVERTED TO USE THE NEW INTERFACE */
             this.id = db.getLastExpenseID(this.account);
             ledger lastLed = db.getLastLedgerForAccount(this.account);
             if (lastLed.accountID == -1) {

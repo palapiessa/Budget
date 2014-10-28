@@ -1,0 +1,3 @@
+﻿[[@accountID INT,@start DATETIME]]
+
+SELECT MIN(led.postedDate) AS [minDate] FROM ledger led WHERE led.accountID = @accountID AND led.postedDate > @start

@@ -53,31 +53,41 @@ namespace budgetApp {
             parameter pEnd = new parameter("@end", end);
             this.inputs.Add(pStart);
             this.inputs.Add(pEnd);
-            /* build query */
-            this.query.getQueryDetails(this.getByDateRange());
-            this.query.addParameters(this.inputs);
-            using (this.query.sqlConn) {
-                this.query.openConn();
-                using (this.query.command) {
-                    this.response = this.query.command.ExecuteReader();
-                    try {
-                        while (this.response.Read()) {
-                            temp = new expense(this.response);
-                            exps.Add(temp);
-                            temp = null;
-                        }
-                    } catch (SQLiteException e) {
-                        MessageBox.Show("An error occured reading from the database.\n\n" + e.ToString());
-                        exps.Clear();
-                    } finally {
-                        /* deconstruct */
-                        this.query.closeConn();
-                        this.inputs.Clear();
-                    }
-                }
-
+            
+            /* process the query */
+            this.executeGetMultiple(this.getByDateRange());
+            foreach (SQLiteDataReader ex in this.responses) {
+                // need an open data connection to get the responses
+                temp = new expense(ex);
+                exps.Add(temp);
             }
+
             return exps;
+            /* build query */
+            //this.query.getQueryDetails(this.getByDateRange());
+            //this.query.addParameters(this.inputs);
+            //using (this.query.sqlConn) {
+            //    this.query.openConn();
+            //    using (this.query.command) {
+            //        this.response = this.query.command.ExecuteReader();
+            //        try {
+            //            while (this.response.Read()) {
+            //                temp = new expense(this.response);
+            //                exps.Add(temp);
+            //                temp = null;
+            //            }
+            //        } catch (SQLiteException e) {
+            //            MessageBox.Show("An error occured reading from the database.\n\n" + e.ToString());
+            //            exps.Clear();
+            //        } finally {
+            //            /* deconstruct */
+            //            this.query.closeConn();
+            //            this.inputs.Clear();
+            //        }
+            //    }
+
+            //}
+            //return exps;
         }
         /// <summary>
         /// Returns the last expense ID for a given account
@@ -119,7 +129,8 @@ namespace budgetApp {
             bool success = false;
             // generate a list of parameters from the object
             this.query.getQueryDetails(this.insertQuery());
-            this.query.addParameters(setParameters(newExpense));
+            setParameters(newExpense);
+            this.query.addParameters(this.inputs);
             using (this.query.sqlConn) {
                 this.query.openConn();
                 try {
@@ -128,11 +139,18 @@ namespace budgetApp {
                 } catch (SQLiteException e) {
                     MessageBox.Show("An error occured write Expense to database.\n\n" + e.ToString());
                 } finally {
+                    this.inputs.Clear();
                     this.query.closeConn();
                 }
                 return success;
             }
         }
+        #endregion
+
+        #region Deletes
+        #endregion
+
+        #region Updates
         #endregion
 
         #endregion
@@ -143,27 +161,15 @@ namespace budgetApp {
         /// </summary>
         /// <param name="ex"></param>
         /// <returns>list of parameter object type</returns>
-        private List<parameter> setParameters( expense ex ) {
-            List<parameter> parameters = new List<parameter>();
-            parameter id = new parameter("@id", ex.id);
-            parameter payTo = new parameter("@payTo", ex.payTo);
-            parameter amount = new parameter("@amount", ex.amount);
-            parameter postedDate = new parameter("@postedDate", ex.postedDate);
-            parameter expenseDate = new parameter("@expenseDate", ex.expenseDate);
-            parameter notes = new parameter("@notes", ex.notes);
-            parameter payingAccount = new parameter("@payingAccount", ex.account);
-            parameter budgetCat = new parameter("@budgetCat", ex.category);
-
-            parameters.Add(id);
-            parameters.Add(payTo);
-            parameters.Add(amount);
-            parameters.Add(postedDate);
-            parameters.Add(expenseDate);
-            parameters.Add(notes);
-            parameters.Add(payingAccount);
-            parameters.Add(budgetCat);
-
-            return parameters;
+        private void setParameters( expense ex ) {
+            this.inputs.Add(new parameter("@id", ex.id));
+            this.inputs.Add(new parameter("@payTo", ex.payTo));
+            this.inputs.Add(new parameter("@amount", ex.amount));
+            this.inputs.Add(new parameter("@postedDate", ex.postedDate));
+            this.inputs.Add(new parameter("@expenseDate", ex.expenseDate));
+            this.inputs.Add(new parameter("@notes", ex.notes));
+            this.inputs.Add(new parameter("@payingAccount", ex.account));
+            this.inputs.Add(new parameter("@budgetCat", ex.category));
         }
         #endregion
     }

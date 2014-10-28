@@ -1,0 +1,3 @@
+﻿[[@accountID INT,@first DATETIME,@last DATETIME]]
+
+SELECT led.ID, led.balanceBefore, led.balanceAfter, led.expenseID, led.incomeID, led.accountID, led.postedDate FROM LEDGER led WHERE led.accountID = @accountID AND led.postedDate BETWEEN @first AND @last ORDER BY led.postedDate ASC

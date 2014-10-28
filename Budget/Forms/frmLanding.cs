@@ -31,11 +31,22 @@ namespace budgetApp {
             this.loadAccountsCombo();
             this.setInitalDates();
             this.loadRegister();
-            iLedger test = new iLedger();
-            ledger led = new ledger();
-            led.id = 7;
-            led.balanceBefore = 100000.00;
-            test.update(led);
+            iExpense test = new iExpense();
+            List<expense> test2 = new List<expense>();
+
+            test2 = test.getByTimeFrame(DateTime.Now.AddDays(-30), DateTime.Now);
+            
+
+            //expense ex = new expense("testQuery", 1, 1, "Please work", -1.20, DateTime.Now.AddDays(-14));
+            //test.updateLedersBeforeTimeFrame(ex);
+            //ledger led = new ledger();
+            //led = test.getLastLedgerByAccount(1);
+
+            //test.getMinLedgerDate(1, DateTime.Now.AddDays(-30));
+            //ledger led = new ledger();
+            //led.id = 7;
+            //led.balanceBefore = 100000.00;
+            //test.update(led);
             //iExpense test = new iExpense();
             //MessageBox.Show(test.getLastExpenseID(1).ToString());
         }

@@ -23,9 +23,9 @@ namespace budgetApp {
         public List<queryResponse> _queryColumns = new List<queryResponse>();
 
         public queryBuilder() {
-            this.sqlConn.Open();
+            this.openConn();
             this.command = this.sqlConn.CreateCommand();
-            this.sqlConn.Close();
+            this.closeConn();
         }
 
         //public List<queryParameter> 
@@ -36,16 +36,16 @@ namespace budgetApp {
         /// </summary>
         /// <param name="queryName">Takes the name of the query to be parsed</param>
         public void getQueryDetails( string queryName ) {
+            this.command = this.sqlConn.CreateCommand();
+            this.command.Parameters.Clear();
+            this._queryParameters.Clear();
             string fileLocation = this.basePath + queryName + ".sqlite";
-
             if (!File.Exists(fileLocation)) {
                 // file does not exists
             }
             //List<queryParameter> queryParameters = new List<queryParameter>();
             using (StreamReader input = File.OpenText(fileLocation)) {
-                if (this.sqlConn.State == ConnectionState.Closed) {
-                    this.sqlConn.Open();
-                }
+                this.openConn();
                 string line = "";
                 while ((line = input.ReadLine()) != null) {
                     // build the parameter list
@@ -84,9 +84,7 @@ namespace budgetApp {
                     //MessageBox.Show(line.ToString());
                 }
             }
-            if (this.sqlConn.State == ConnectionState.Open) {
-                this.sqlConn.Close();
-            }
+            this.closeConn();
         }
 
         private publicEnums.columnType getColumnTypeFromName( string columnName ) {

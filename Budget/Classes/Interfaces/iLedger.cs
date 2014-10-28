@@ -15,6 +15,69 @@ namespace budgetApp {
         #region Database Interaction
 
         #region Selects
+        /// <summary>
+        /// Finds the first ledger that is posted after the new ledgers posted date
+        /// </summary>
+        /// <param name="accountID">Integer for the account to inspect</param>
+        /// <param name="startTime">The posted date of the new ledger</param>
+        /// <returns>Datetime with first ledger that has a date passed the new ledger date</returns>
+        public DateTime getMinLedgerDate( int accountID, DateTime startTime ) {
+            DateTime initial = DateTime.MinValue;
+            parameter actID = new parameter("@accountID", accountID);
+            parameter start = new parameter("@start", startTime);
+            this.inputs.Add(actID);
+            this.inputs.Add(start);
+            
+            this.query.getQueryDetails("getMinLedger");
+            this.query.addParameters(this.inputs);
+
+            using (this.query.sqlConn) {
+                this.query.openConn();
+                try {
+                    this.response = this.query.command.ExecuteReader();
+                    if (this.response.HasRows) {
+                        if (this.response["minDate"] != null) {
+                            initial = Convert.ToDateTime(this.response["minDate"]);
+                        }
+                    }
+                } catch (SQLiteException e) {
+                    MessageBox.Show("An error occured with getMinLedger query.\n\n" + e.ToString());
+                } finally {
+                    this.inputs.Clear();
+                    //this.query.command;
+                    this.query.closeConn();
+                    
+                }
+            }
+            if (initial > startTime) { initial = startTime; }
+
+            return initial;
+        }
+        /// <summary>
+        /// Returns the chronologically last ledger for a given account from the database
+        /// </summary>
+        /// <param name="accountID"></param>
+        /// <returns>ledger object</returns>
+        public ledger getLastLedgerByAccount( int accountID ) {
+            ledger temp = null;
+
+            this.inputs.Add(new parameter("@accountID", accountID));
+
+            this.query.getQueryDetails("getLastLedgerByAccount");
+            this.query.addParameters(this.inputs);
+
+            using (this.query.sqlConn) {
+                this.query.openConn();
+                using (this.query.command) {
+                    this.response = this.query.command.ExecuteReader();
+                    this.response.Read();
+                    temp = new ledger(response);
+                }
+            }
+            this.inputs.Clear();
+            this.query.closeConn();
+            return temp;
+        }
         #endregion
 
         #region Inserts
@@ -66,6 +129,69 @@ namespace budgetApp {
                 }
                 return succes;
             }
+        }
+
+        public bool updateLedersBeforeTimeFrame( expense newEx ) {
+            bool success = false;
+            List<ledger> befores = new List<ledger>();
+            DateTime first = this.getMinLedgerDate(newEx.account, newEx.expenseDate);
+            ledger lastLedger = new ledger();
+            lastLedger = this.getLastLedgerByAccount(newEx.account);
+            DateTime last = lastLedger.postedDate;
+
+            this.inputs.Add(new parameter("@accountID", newEx.account));
+            this.inputs.Add(new parameter("@first", first));
+            this.inputs.Add(new parameter("@last", last));
+
+            this.query.getQueryDetails("updateLedgersBeforeTimeFrame");
+            this.query.addParameters(this.inputs);
+            using (this.query.sqlConn) {
+                this.query.openConn();
+                using (this.query.command) {
+                    this.response = this.query.command.ExecuteReader();
+                    while (this.response.Read()) {
+                        ledger temp = new ledger(this.response);
+                        befores.Add(temp);
+                        temp = null;
+                    }
+                }
+                this.query.command = null;
+                this.query.closeConn();
+            }
+
+            int firstID = befores[0].id;
+            ledger newLedger = new ledger();
+            double tempBB = 0.00; // will be the Before Balance from the first item that is in the database
+            double tempBA = 0.00; // will be the corrected after balance
+            /* start with the youngest ledger that is older than the new expense */
+            tempBB = befores[0].balanceBefore;
+            newLedger.balanceBefore = tempBB;
+            tempBA = tempBB - (newEx.amount);
+            newLedger.balanceAfter = tempBA;
+            newLedger.postedDate = newEx.expenseDate;
+            newLedger.expenseID = newEx.id;
+            newLedger.accountID = newEx.account;
+            /* new ledger is complete, insert into database */
+            if (!this.insert(newLedger)) {
+                return false;
+            }
+            /* update the ledgers */
+            iExpense expenseInterface = new iExpense();
+            expense tempExpense = new expense();
+            for (int i = 0; i < befores.Count; i++) {
+                tempExpense = expenseInterface.getByID(befores[i].expenseID);
+                tempBB = tempBA;
+                tempBA = tempBB + tempExpense.amount;
+                befores[i].balanceBefore = tempBB;
+                befores[i].balanceAfter = tempBA;
+                
+                if (!this.update(befores[i])) {
+                    MessageBox.Show("An error occurred updating the ledger.\n");
+                    return false;
+                }
+            }
+
+            return success;
         }
         #endregion
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.SQLite;
+using System.Windows.Forms;
 
 namespace budgetApp {
     /* the most basic interface class, other interfaces will inherit from this one */
@@ -12,7 +13,57 @@ namespace budgetApp {
         protected sqliteInterface db = new sqliteInterface();
         protected queryBuilder query = new queryBuilder();
         protected List<parameter> inputs = new List<parameter>();
-        protected SQLiteDataReader response = null;
+        protected List<object> responses = new List<object>();
+        protected SQLiteDataReader response = null;//new SQLiteDataReader();
+
+        protected void executeGetMultiple(string queryName) {
+            /* get the inputs */
+            /* build the query */
+            this.query.getQueryDetails(queryName);
+            this.query.addParameters(this.inputs);
+            using (this.query.sqlConn) {
+                this.query.openConn();
+                using (this.query.command) {
+                    this.response = this.query.command.ExecuteReader();
+                    try {
+                        while (this.response.Read()) {
+                            for (int i = 0; i < this.response.FieldCount; i++) {
+                                string temp = this.response.GetName(i);
+                            }
+                            //this.response.GetName(0);
+                            //this.response.GetString(0);
+                            //this.response.GetString(1);
+                            /*
+                             * We can, loop through the response for each iteration and get the columns and the value (queryColumn)
+                             * Create a queryRow object, that holds a list of queryColumns !
+                             * Pass the queryRow object to the class constructor and build from there?
+                             * 
+                             * psuedo:
+                             * foreach (x in response) { response.GetString(0) }
+                             */ 
+
+
+                            //this.responses.Add((object)this.response);
+                            //foreach ()
+                            //temp = new expense(this.response);
+                            //exps.Add(temp);
+                            //temp = null;
+                        }
+                    } catch (SQLiteException e) {
+                        MessageBox.Show("An error occured reading from the database.\n\n" + e.ToString());
+                        //exps.Clear();
+                    } finally {
+                        /* deconstruct */
+                        //this.query.closeConn();
+                        this.inputs.Clear();
+                    }
+                }
+
+            }
+            //return exps;
+            /* add parameters */
+            
+        }
 
         /// <summary>
         /// Returns the name of the query responsible for pulling information from the database by the id of the object.

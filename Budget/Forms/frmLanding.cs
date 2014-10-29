@@ -17,7 +17,7 @@ namespace budgetApp {
 
         public frmLanding() {
             InitializeComponent();
-
+            this.db.createDatabase();
             //expense test2 = new expense();
             //test.insertExpense(test2);
             //List<parameter> ps = new List<parameter>();
@@ -27,14 +27,24 @@ namespace budgetApp {
             /*queryBuilder test = new queryBuilder();
             test.getQueryDetails("GetAccountByID");*/
 
-            this.db.createDatabase();
+            //this.db.createDatabase();
             this.loadAccountsCombo();
             this.setInitalDates();
             this.loadRegister();
-            iExpense test = new iExpense();
-            List<expense> test2 = new List<expense>();
 
-            test2 = test.getByTimeFrame(DateTime.Now.AddDays(-30), DateTime.Now);
+            //iLedger test = new iLedger();
+            //iExpense test3 = new iExpense();
+            //expense test2 = new expense("iLedgerTest", 1, 1, "PLEASE LET THIS WORK", 1000.00, DateTime.Now.AddDays(-17));
+            ////test3.insert(test2);
+            //test.updateLedersBeforeTimeFrame(test2);
+
+            //iExpense test = new iExpense();
+            //test.getLastID(1);
+            //expense test2 = new expense();
+            //test2 = test.getByID(1);
+            //MessageBox.Show(test2.amount.ToString());
+            //List<expense> test2 = new List<expense>();
+            //test2 = test.getByTimeFrame(DateTime.Now.AddDays(-30), DateTime.Now);
             
 
             //expense ex = new expense("testQuery", 1, 1, "Please work", -1.20, DateTime.Now.AddDays(-14));

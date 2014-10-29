@@ -12,24 +12,22 @@ namespace budgetApp {
     /// <summary>
     /// Takes in the name of the query and builds the query as needed.
     /// Utilizes the queryParameter object that parses the query to determine the parameters that are expected to be passed into the query.
-    /// Utilizes the queryResponse object which determines the columns and the types for the response.
-    /// 
-    /// TODO : Dynamically build the query
     /// </summary>
     class queryBuilder : sqliteInterface {
         private string basePath = System.Windows.Forms.Application.StartupPath + "\\Queries\\";
         public SQLiteCommand command;
         public List<queryParameter> _queryParameters = new List<queryParameter>();
-        public List<queryResponse> _queryColumns = new List<queryResponse>();
+        public List<responseColumn> _queryColumns = new List<responseColumn>();
 
+        #region Initialization
         public queryBuilder() {
             this.openConn();
             this.command = this.sqlConn.CreateCommand();
             this.closeConn();
         }
+        #endregion
 
-        //public List<queryParameter> 
-
+        #region Methods
         /// <summary>
         /// Parses the query file to determine the incoming parameters, the actual query string and the responses that the query is expected to provide.
         /// Loads queryParameters and queryColumns with type as well as names of parameters and response columns
@@ -60,80 +58,20 @@ namespace budgetApp {
                             temp = null;
                         }
                     }
-                    // build the response list
+                    /* the readline contains the actual query */
                     if (line.Contains("SELECT") || line.Contains("INSERT") || line.Contains("UPDATE") || line.Contains("DELETE")) {
                         // set the query
                         this.command.CommandText = line;
-                        //int fromLocation = line.IndexOf("FROM");
-                        //line = line.Substring(7, fromLocation - 7).TrimEnd(' ');
-                        //List<string> columns = line.Split(',').ToList<string>();
-                        ////
-                        //// need to handle this case: l.ledgerID AS [ID], i.incomeID AS [incomeID]
-                        //// only grabbing what is in between the brackets, as these are the names of the columns
-                        ////
-                        //// what about inserts, updates, deletes, this is a very rigid case
-                        ////
-                        //foreach (string column in columns) {
-                        //    queryResponse tempColumn = new queryResponse();
-                        //    tempColumn.columnName = column.Substring(1, column.Length - 2);
-                        //    tempColumn.columnTypeName = getColumnTypeFromName(tempColumn.columnName);
-                        //    this._queryColumns.Add(tempColumn);
-                        //    tempColumn = null;
-                        //}
                     }
-                    //MessageBox.Show(line.ToString());
                 }
             }
             this.closeConn();
         }
 
-        private publicEnums.columnType getColumnTypeFromName( string columnName ) {
-            switch (columnName) {
-                /* Text columns */
-                case "payTo":
-                    return publicEnums.columnType.text;
-                case "notes":
-                    return publicEnums.columnType.text;
-                case "name":
-                    return publicEnums.columnType.text;
-                case "userName":
-                    return publicEnums.columnType.text;
-                /* Integer columns */
-                case "category":
-                    return publicEnums.columnType.integer;
-                case "account":
-                    return publicEnums.columnType.integer;
-                case "expenseID":
-                    return publicEnums.columnType.integer;
-                case "incomeID":
-                    return publicEnums.columnType.integer;
-                case "primaryCat":
-                    return publicEnums.columnType.integer;
-                /* Real/Double Columns */
-                case "balance":
-                    return publicEnums.columnType.real;
-                case "interest":
-                    return publicEnums.columnType.real;
-                case "balanceBefore":
-                    return publicEnums.columnType.real;
-                case "balanceAfter":
-                    return publicEnums.columnType.real;
-                case "amount":
-                    return publicEnums.columnType.real;
-                /* Datetime columns */
-                case "expenseDate":
-                    return publicEnums.columnType.datetime;
-                case "postedDate":
-                    return publicEnums.columnType.datetime;
-
-            }
-            return publicEnums.columnType.none;
-        }
-        /* all the details of the query are now known, pass expected parameters as well as their values
-         * if checking for id, pass in 
-         * 
-         * return just the final query parameters; let the interface handle the specifics of bindings
-         */
+        /// <summary>
+        /// Formats and adds the parameters to the command object
+        /// </summary>
+        /// <param name="inputParameters"></param>
         public void addParameters(List<parameter> inputParameters) {
             foreach (queryParameter param in this._queryParameters) {
                 switch (param.dataType) {
@@ -150,23 +88,10 @@ namespace budgetApp {
                         this.command.Parameters.Add(param.paramName, DbType.String).Value = this.getParameterValueFromList(inputParameters, param.paramName);
                         break;
 
-                    //temp.Parameters.Add
                 }
             }
-            //SQLiteCommand select = 
-            /**
-             * General sqlite call for select
-             * set CommandText to the query
-             * Parse the parameters:
-             *  foreach (param in parameters):
-             *      switch param.type:
-             *          case pubicEnums.ColumnType.text:
-             *              select.Parameters.Add(param.Name, DbType.String).Value = input ---- HOW DO THIS??
-             * 
-             * 
-             * pass in queryParameter(list) 
-             */
         }
+
         /// <summary>
         /// Returns the matched value for the requested parameter.
         /// Eg. procedure is expecting @id. Into the 
@@ -182,5 +107,6 @@ namespace budgetApp {
             }
             return "error";
         }
+        #endregion
     }
 }

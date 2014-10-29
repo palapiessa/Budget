@@ -81,6 +81,16 @@ namespace budgetApp {
             this.accountID = Convert.ToInt32(response["accountID"]);
             this.postedDate = Convert.ToDateTime(response["postedDate"]);
         }
+
+        public ledger( responseRow response ) {
+            this.id = Convert.ToInt32(response.getColumnValue("id"));
+            this.balanceBefore = Convert.ToDouble(response.getColumnValue("balanceBefore"));
+            this.balanceAfter = Convert.ToDouble(response.getColumnValue("balanceAfter"));
+            this.incomeID = Convert.ToInt32(response.getColumnValue("incomeID"));
+            this.expenseID = Convert.ToInt32(response.getColumnValue("expenseID"));
+            this.accountID = Convert.ToInt32(response.getColumnValue("accountID"));
+            this.postedDate = Convert.ToDateTime(response.getColumnValue("postedDate"));
+        }
         #endregion
     }
 }

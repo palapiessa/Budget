@@ -8,6 +8,12 @@ using System.Windows.Forms;
 
 namespace budgetApp {
     class iLedger : baseInterface {
+        private string _getByID = "getLedgerByID";
+        private string _getMinLedger = "getMinLedger";
+        private string _lastByAccount = "getLastLedgerByAccount";
+        private string _update = "updateLedger";
+        private string _updateBeforeTimeFrame = "updateLedgersBeforeTimeFrame";
+        private string _insert = "insertLedger";
         public iLedger() {
             this.className = publicEnums.classType.ledger;
         }
@@ -23,32 +29,35 @@ namespace budgetApp {
         /// <returns>Datetime with first ledger that has a date passed the new ledger date</returns>
         public DateTime getMinLedgerDate( int accountID, DateTime startTime ) {
             DateTime initial = DateTime.MinValue;
-            parameter actID = new parameter("@accountID", accountID);
-            parameter start = new parameter("@start", startTime);
-            this.inputs.Add(actID);
-            this.inputs.Add(start);
             
-            this.query.getQueryDetails("getMinLedger");
-            this.query.addParameters(this.inputs);
+            this.inputs.Add(new parameter("@accountID", accountID));
+            this.inputs.Add(new parameter("@start", startTime));
 
-            using (this.query.sqlConn) {
-                this.query.openConn();
-                try {
-                    this.response = this.query.command.ExecuteReader();
-                    if (this.response.HasRows) {
-                        if (this.response["minDate"] != null) {
-                            initial = Convert.ToDateTime(this.response["minDate"]);
-                        }
-                    }
-                } catch (SQLiteException e) {
-                    MessageBox.Show("An error occured with getMinLedger query.\n\n" + e.ToString());
-                } finally {
-                    this.inputs.Clear();
-                    //this.query.command;
-                    this.query.closeConn();
-                    
-                }
+            if (this.executeGetSingle(this._getMinLedger)) {
+                initial = Convert.ToDateTime(this.row.getColumnValue("minDate"));
             }
+            
+            //this.query.getQueryDetails("getMinLedger");
+            //this.query.addParameters(this.inputs);
+
+            //using (this.query.sqlConn) {
+            //    this.query.openConn();
+            //    try {
+            //        this.response = this.query.command.ExecuteReader();
+            //        if (this.response.HasRows) {
+            //            if (this.response["minDate"] != null) {
+            //                initial = Convert.ToDateTime(this.response["minDate"]);
+            //            }
+            //        }
+            //    } catch (SQLiteException e) {
+            //        MessageBox.Show("An error occured with getMinLedger query.\n\n" + e.ToString());
+            //    } finally {
+            //        this.inputs.Clear();
+            //        //this.query.command;
+            //        this.query.closeConn();
+                    
+            //    }
+            //}
             if (initial > startTime) { initial = startTime; }
 
             return initial;
@@ -63,19 +72,11 @@ namespace budgetApp {
 
             this.inputs.Add(new parameter("@accountID", accountID));
 
-            this.query.getQueryDetails("getLastLedgerByAccount");
-            this.query.addParameters(this.inputs);
-
-            using (this.query.sqlConn) {
-                this.query.openConn();
-                using (this.query.command) {
-                    this.response = this.query.command.ExecuteReader();
-                    this.response.Read();
-                    temp = new ledger(response);
-                }
+            if (this.executeGetSingle(this._lastByAccount)) {
+                temp = new ledger(this.row);
+            } else {
+                MessageBox.Show("An error occurred reading the ledger.");
             }
-            this.inputs.Clear();
-            this.query.closeConn();
             return temp;
         }
         #endregion
@@ -89,21 +90,12 @@ namespace budgetApp {
         public bool insert( ledger l ) {
             bool success = false;
             // generate a list of parameters from the object
-            this.query.getQueryDetails(this.insertQuery());
-            this.query.addParameters(setParameters(l));
-            using (this.query.sqlConn) {
-                this.query.openConn();
-                try {
-                    this.query.command.ExecuteNonQuery();
-                    success = true;
-                } catch (SQLiteException e) {
-                    MessageBox.Show("An error occured writing Ledger to database.\n\n" + e.ToString());
-                } finally {
-                    this.query.closeConn();
-                }
-                return success;
-            }
+            this.setParameters(l);
 
+            if (this.executeNonQuery(this._insert)) {
+                success = true;
+            }
+            return success;
         }
         #endregion
 
@@ -114,21 +106,17 @@ namespace budgetApp {
         /// <param name="l">Ledger object that will be modified</param>
         /// <returns>True upon updating the database without issue</returns>
         public bool update( ledger l ) {
-            bool succes = false;
-            this.query.getQueryDetails(this.updateQuery());
-            this.query.addParameters(setParameters(l));
-            using (this.query.sqlConn) {
-                this.query.openConn();
-                try {
-                    this.query.command.ExecuteNonQuery();
-                    succes = true;
-                } catch (SQLiteException e) {
-                    MessageBox.Show("An error occured writing Ledger to database.\n\n" + e.ToString());
-                } finally {
-                    this.query.closeConn();
-                }
-                return succes;
+            bool success = false;
+
+            this.setParameters(l);
+
+            if (this.executeNonQuery(this._update)) {
+                success = true;
+            } else {
+                // error
             }
+
+            return success;
         }
 
         public bool updateLedersBeforeTimeFrame( expense newEx ) {
@@ -143,21 +131,29 @@ namespace budgetApp {
             this.inputs.Add(new parameter("@first", first));
             this.inputs.Add(new parameter("@last", last));
 
-            this.query.getQueryDetails("updateLedgersBeforeTimeFrame");
-            this.query.addParameters(this.inputs);
-            using (this.query.sqlConn) {
-                this.query.openConn();
-                using (this.query.command) {
-                    this.response = this.query.command.ExecuteReader();
-                    while (this.response.Read()) {
-                        ledger temp = new ledger(this.response);
-                        befores.Add(temp);
-                        temp = null;
-                    }
+            if (this.executeGetMultiple(this._updateBeforeTimeFrame)) {
+                foreach (responseRow row in this.rows) {
+                    ledger temp = new ledger(row);
+                    befores.Add(temp);
+                    temp = null;
                 }
-                this.query.command = null;
-                this.query.closeConn();
             }
+
+            //this.query.getQueryDetails("updateLedgersBeforeTimeFrame");
+            //this.query.addParameters(this.inputs);
+            //using (this.query.sqlConn) {
+            //    this.query.openConn();
+            //    using (this.query.command) {
+            //        this.response = this.query.command.ExecuteReader();
+            //        while (this.response.Read()) {
+            //            ledger temp = new ledger(this.response);
+            //            befores.Add(temp);
+            //            temp = null;
+            //        }
+            //    }
+            //    this.query.command = null;
+            //    this.query.closeConn();
+            //}
 
             int firstID = befores[0].id;
             ledger newLedger = new ledger();
@@ -166,7 +162,7 @@ namespace budgetApp {
             /* start with the youngest ledger that is older than the new expense */
             tempBB = befores[0].balanceBefore;
             newLedger.balanceBefore = tempBB;
-            tempBA = tempBB - (newEx.amount);
+            tempBA = tempBB + (newEx.amount);
             newLedger.balanceAfter = tempBA;
             newLedger.postedDate = newEx.expenseDate;
             newLedger.expenseID = newEx.id;
@@ -190,7 +186,7 @@ namespace budgetApp {
                     return false;
                 }
             }
-
+            success = true;
             return success;
         }
         #endregion
@@ -201,25 +197,14 @@ namespace budgetApp {
         #endregion
 
         #region Helper Functions
-        private List<parameter> setParameters( ledger l ) {
-            List<parameter> parameters = new List<parameter>();
-            parameter id = new parameter("@id", l.id);
-            parameter balanceBefore = new parameter("@balanceBefore", l.balanceBefore);
-            parameter balanceAfter = new parameter("@balanceAfter", l.balanceAfter);
-            parameter expenseID = new parameter("@expenseID", l.expenseID);
-            parameter incomeID = new parameter("@incomeID", l.incomeID);
-            parameter accountID = new parameter("@accountID", l.accountID);
-            parameter postedDate = new parameter("@postedDate", l.postedDate);
-
-            parameters.Add(id);
-            parameters.Add(balanceAfter);
-            parameters.Add(balanceBefore);
-            parameters.Add(postedDate);
-            parameters.Add(incomeID);
-            parameters.Add(accountID);
-            parameters.Add(expenseID);
-
-            return parameters;
+        private void setParameters( ledger l ) {
+            this.inputs.Add(new parameter("@id", l.id));
+            this.inputs.Add(new parameter("@balanceBefore", l.balanceBefore));
+            this.inputs.Add(new parameter("@balanceAfter", l.balanceAfter));
+            this.inputs.Add(new parameter("@expenseID", l.expenseID));
+            this.inputs.Add(new parameter("@incomeID", l.incomeID));
+            this.inputs.Add(new parameter("@accountID", l.accountID));
+            this.inputs.Add(new parameter("@postedDate", l.postedDate));
         }
 
         #endregion

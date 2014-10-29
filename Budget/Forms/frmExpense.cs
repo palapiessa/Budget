@@ -55,7 +55,7 @@ namespace budgetApp
                     updateStatus("Invalid Category");
                     return false;
                 }
-                if (!newExpense.add(this.db)) {
+                if (!newExpense.add()) {
                     updateStatus("Error adding to database.");
                     return false;
                 } else {

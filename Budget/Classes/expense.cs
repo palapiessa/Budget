@@ -17,6 +17,7 @@ namespace budgetApp {
         private DateTime _postedDate;
         private DateTime _expenseDate;
         private double _amount;
+        private iExpense db = new iExpense();
         public string payTo { get { return _payTo;} set { _payTo = value; } }
         public int category { get { return _category; } set { _category = value; } }
         public int account { get { return _account; } set { _account = value; } }
@@ -25,6 +26,7 @@ namespace budgetApp {
         public DateTime postedDate { get { return _postedDate; } set { _postedDate = value; } }
         public DateTime expenseDate { get { return _expenseDate; } set { _expenseDate = value; } }
         public double amount { get { return _amount; } set { _amount = value; } }
+
         #endregion
 
         #region Constructors
@@ -70,6 +72,18 @@ namespace budgetApp {
             this.postedDate = Convert.ToDateTime(response["postedDate"]);
             this.expenseDate = Convert.ToDateTime(response["expenseDate"]);
         }
+
+        public expense( responseRow response ) {
+            this.id = Convert.ToInt32(response.getColumnValue("id"));
+            this.payTo = response.getColumnValue("payTo");
+            this.amount = Convert.ToDouble(response.getColumnValue("amount"));
+            this.category = Convert.ToInt32(response.getColumnValue("budgetCat"));
+            this.account = Convert.ToInt32(response.getColumnValue("payingAccount"));
+            this.notes = response.getColumnValue("notes");
+            this.postedDate = Convert.ToDateTime(response.getColumnValue("postedDate"));
+            this.expenseDate = Convert.ToDateTime(response.getColumnValue("expenseDate"));
+        }
+
         #endregion
 
         /*
@@ -78,29 +92,35 @@ namespace budgetApp {
          * Give the entry form access to the interface or create a controller that handles it. Not a fan of this one..
          */
         #region Methods
-        public bool add(sqliteInterface db) {
+        public bool add() {
+            iLedger ledDB = new iLedger();
+            
+            if (!this.db.insert(this)) { return false; }
+                        
             /* sqlite code to add expense to the database */
             /* need to pull the catid and account id to make sure those are the ones that get posted */
-            if (!db.addExpense(this)) {
-                return false;
-            }
+            //if (!db.addExpense(this)) {
+            //    return false;
+            //}
 
             /* TODO : FROM HERE CODE NEEDS TO BE CONVERTED TO USE THE NEW INTERFACE */
-            this.id = db.getLastExpenseID(this.account);
-            ledger lastLed = db.getLastLedgerForAccount(this.account);
+            this.id = this.db.getLastID(this.account); //db.getLastExpenseID(this.account);
+            ledger lastLed = ledDB.getLastLedgerByAccount(this.account);//db.getLastLedgerForAccount(this.account);
             if (lastLed.accountID == -1) {
                 return false;
             }
             if (lastLed.postedDate > this.expenseDate) {
-                this.id = db.getLastExpenseID(this.account);
+                this.id = this.db.getLastID(this.account); //db.getLastExpenseID(this.account);
                 //MessageBox.Show("Expense date before last posted. Problem time...");
-                if (!db.updateLedgersBeforeTimeFrame(this)) {
+                if (!ledDB.updateLedersBeforeTimeFrame(this)) { 
+                //if (!db.updateLedgersBeforeTimeFrame(this)) {
                     MessageBox.Show("An error occurred updating prior records.");
                     return false;
                 }
             } else {
                 ledger newLed = new ledger(lastLed.balanceAfter, (lastLed.balanceAfter + this.amount), this.id, -1, this.account, this.expenseDate);
-                if (!db.addLedger(newLed)) {
+                if (!ledDB.insert(newLed)) { 
+                //if (!db.addLedger(newLed)) {
                     return false;
                 }
             }

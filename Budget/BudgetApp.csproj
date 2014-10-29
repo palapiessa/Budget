@@ -70,13 +70,14 @@
     <Compile Include="Classes\accountRegister.cs" />
     <Compile Include="Classes\Enums\publicEnums.cs" />
     <Compile Include="Classes\expense.cs" />
-    <Compile Include="Classes\Interfaces\baseInterface.cs" />
+    <Compile Include="Classes\QueryBuilder\baseSQLInteraction.cs" />
     <Compile Include="Classes\Interfaces\iExpense.cs" />
     <Compile Include="Classes\Interfaces\iLedger.cs" />
     <Compile Include="Classes\QueryBuilder\parameter.cs" />
     <Compile Include="Classes\QueryBuilder\queryBuilder.cs" />
     <Compile Include="Classes\QueryBuilder\queryParameter.cs" />
-    <Compile Include="Classes\QueryBuilder\queryResponse.cs" />
+    <Compile Include="Classes\QueryBuilder\responseColumn.cs" />
+    <Compile Include="Classes\QueryBuilder\responseRow.cs" />
     <Compile Include="Forms\frmAddAccount.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -97,7 +98,7 @@
     </Compile>
     <Compile Include="Classes\income.cs" />
     <Compile Include="Classes\ledger.cs" />
-    <Compile Include="Classes\sqliteinterface.cs" />
+    <Compile Include="Classes\QueryBuilder\sqliteInterface.cs" />
     <Compile Include="Forms\frmExpense.cs">
       <SubType>Form</SubType>
     </Compile>

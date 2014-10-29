@@ -10,8 +10,14 @@ using System.Data.SQLite;
 namespace budgetApp {
     /* creates an interface to interact with the database, creating and returning expense objects, adding to the database, etc. */
     class iExpense : baseInterface {
+        private string _getByID = "getExpenseByID";
+        private string _getByDateRange = "getExpenseDateRange";
+        private string _getLastID = "getLastExpenseID";
+        private string _update = "updateExpense";
+        private string _insert = "insertExpense";
         public iExpense() {
             this.className = publicEnums.classType.expense;
+            
         }
         #region Database Interaction
 
@@ -24,43 +30,50 @@ namespace budgetApp {
         public expense getByID( int expenseID ) {
             expense temp = null;
             /* create parameter list */            
-            parameter inp = new parameter("@ID", expenseID);
-            //List<parameter> inputs = new List<parameter>();
-            this.inputs.Add(inp);
+            this.inputs.Add(new parameter("@ID", expenseID));
 
             /* build the query */
-            this.query.getQueryDetails(this.getByIDQuery());
-            this.query.addParameters(this.inputs);
-            /* process the query and build the expense object */
-            using (this.query.sqlConn) {
-                this.query.openConn();
-                using (this.query.command) {
-                    this.response = this.query.command.ExecuteReader();
-                    this.response.Read();
-                    temp = new expense(this.response);
-                }
+
+            if (this.executeGetSingle(this._getByID)) {
+                temp = new expense(this.row);
             }
-            this.query.closeConn();
-            this.inputs.Clear();
+            //this.query.getQueryDetails(this.getByIDQuery());
+            //this.query.addParameters(this.inputs);
+            ///* process the query and build the expense object */
+            //using (this.query.sqlConn) {
+            //    this.query.openConn();
+            //    using (this.query.command) {
+            //        this.response = this.query.command.ExecuteReader();
+            //        this.response.Read();
+            //        temp = new expense(this.response);
+            //    }
+            //}
+            //this.query.closeConn();
+            //this.inputs.Clear();
             return temp;
         }
 
         public List<expense> getByTimeFrame( DateTime start, DateTime end ) {
             List<expense> exps = new List<expense>();
-            expense temp = null;
 
-            parameter pStart = new parameter("@start", start);
-            parameter pEnd = new parameter("@end", end);
-            this.inputs.Add(pStart);
-            this.inputs.Add(pEnd);
+            this.inputs.Add(new parameter("@start", start));
+            this.inputs.Add(new parameter("@end", end));
             
             /* process the query */
-            this.executeGetMultiple(this.getByDateRange());
-            foreach (SQLiteDataReader ex in this.responses) {
-                // need an open data connection to get the responses
-                temp = new expense(ex);
-                exps.Add(temp);
+            if (this.executeGetMultiple(this.getByDateRange())) {
+                /* create a new expense object for each return row from the query */
+                foreach (responseRow row in this.rows) {
+                    exps.Add(new expense(row));
+                }
+            } else {
+                MessageBox.Show("An error occurred reading from the database.");
+                exps.Clear();
             }
+            //foreach (SQLiteDataReader ex in this.responses) {
+            //    // need an open data connection to get the responses
+            //    temp = new expense(ex);
+            //    exps.Add(temp);
+            //}
 
             return exps;
             /* build query */
@@ -89,6 +102,7 @@ namespace budgetApp {
             //}
             //return exps;
         }
+
         /// <summary>
         /// Returns the last expense ID for a given account
         /// </summary>
@@ -96,10 +110,13 @@ namespace budgetApp {
         /// <returns></returns>
         public int getLastID( int accountID ) {
             int id = -1; // error
-            parameter actID = new parameter("@accountID", accountID);
-            this.inputs.Add(actID);
+            this.inputs.Add(new parameter("@accountID", accountID));
 
-            this.query.getQueryDetails(this.getLastID());
+            if (this.executeGetSingle(this._getLastID)) {
+                id = Convert.ToInt32(this.row.getColumnValue("id"));
+            }
+
+            /*this.query.getQueryDetails(this.getLastID());
             this.query.addParameters(this.inputs);
             using (this.query.sqlConn) {
                 this.query.openConn();
@@ -114,7 +131,7 @@ namespace budgetApp {
                         this.query.closeConn();
                     }
                 }
-            }
+            }*/
             return id;
         }
         #endregion
@@ -128,22 +145,12 @@ namespace budgetApp {
         public bool insert( expense newExpense ) {
             bool success = false;
             // generate a list of parameters from the object
-            this.query.getQueryDetails(this.insertQuery());
             setParameters(newExpense);
-            this.query.addParameters(this.inputs);
-            using (this.query.sqlConn) {
-                this.query.openConn();
-                try {
-                    this.query.command.ExecuteNonQuery();
-                    success = true;
-                } catch (SQLiteException e) {
-                    MessageBox.Show("An error occured write Expense to database.\n\n" + e.ToString());
-                } finally {
-                    this.inputs.Clear();
-                    this.query.closeConn();
-                }
-                return success;
+            /* add the expense */
+            if (this.executeNonQuery(this._insert)) {
+                success = true;
             }
+            return success;
         }
         #endregion
 

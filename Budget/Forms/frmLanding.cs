@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using budgetApp.Classes.Interfaces;
 
 namespace budgetApp {
     public partial class frmLanding : Form {
@@ -31,7 +32,8 @@ namespace budgetApp {
             this.loadAccountsCombo();
             this.setInitalDates();
             this.loadRegister();
-
+            
+            
             //iLedger test = new iLedger();
             //iExpense test3 = new iExpense();
             //expense test2 = new expense("iLedgerTest", 1, 1, "PLEASE LET THIS WORK", 1000.00, DateTime.Now.AddDays(-17));
@@ -173,7 +175,7 @@ namespace budgetApp {
         private void loadAccountsCombo() {
             this.cmbAccount.Enabled = false;
             List<string> accounts = new List<string>();
-            accounts = this.db.getAccounts();
+            accounts = controller.iA.getAccountNames();//this.db.getAccounts();
             foreach (string act in accounts) {
                 this.cmbAccount.Items.Add(act);
             }

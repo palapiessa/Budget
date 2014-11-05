@@ -35,6 +35,16 @@ namespace budgetApp {
             this.userName = userName;
         }
 
+        public account( responseRow row ) {
+            this.id = Convert.ToInt32(row.getColumnValue("id"));
+            this.name = row.getColumnValue("name");
+            this.postedDate = Convert.ToDateTime(row.getColumnValue("postedDate"));
+            this.primaryCategory = Convert.ToInt32(row.getColumnValue("primaryCat"));
+            this.interest = Convert.ToDouble(row.getColumnValue("interest"));
+            this.balance = Convert.ToDouble(row.getColumnValue("balance"));
+            this.userName = row.getColumnValue("userName");
+        }
+
         /* add the account to the database */
         public bool add(sqliteInterface db) {
             if (!db.addAccount(this)) {

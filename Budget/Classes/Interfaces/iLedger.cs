@@ -187,6 +187,7 @@ namespace budgetApp {
                 }
             }
             success = true;
+            expenseInterface = null;
             return success;
         }
         #endregion

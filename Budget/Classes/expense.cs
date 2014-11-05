@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SQLite;
+using budgetApp.Classes.Interfaces;
 
 namespace budgetApp {
     class expense {
@@ -17,7 +18,7 @@ namespace budgetApp {
         private DateTime _postedDate;
         private DateTime _expenseDate;
         private double _amount;
-        private iExpense db = new iExpense();
+        //private iExpense db = new iExpense();
         public string payTo { get { return _payTo;} set { _payTo = value; } }
         public int category { get { return _category; } set { _category = value; } }
         public int account { get { return _account; } set { _account = value; } }
@@ -26,7 +27,6 @@ namespace budgetApp {
         public DateTime postedDate { get { return _postedDate; } set { _postedDate = value; } }
         public DateTime expenseDate { get { return _expenseDate; } set { _expenseDate = value; } }
         public double amount { get { return _amount; } set { _amount = value; } }
-
         #endregion
 
         #region Constructors
@@ -86,41 +86,29 @@ namespace budgetApp {
 
         #endregion
 
-        /*
-         * TODO : Use the interface to interact, rather than direct access to sqliteinterface
-         * Where to put this? Should every instance of expense have an interface? No...
-         * Give the entry form access to the interface or create a controller that handles it. Not a fan of this one..
-         */
         #region Methods
+        /// <summary>
+        /// Adds expense to the database. Uses the controller which contains generic interface objects as the database interactions.
+        /// </summary>
+        /// <returns>true / false depending on whether all actions successfully completed or not</returns>
         public bool add() {
-            iLedger ledDB = new iLedger();
-            
-            if (!this.db.insert(this)) { return false; }
-                        
-            /* sqlite code to add expense to the database */
-            /* need to pull the catid and account id to make sure those are the ones that get posted */
-            //if (!db.addExpense(this)) {
-            //    return false;
-            //}
-
-            /* TODO : FROM HERE CODE NEEDS TO BE CONVERTED TO USE THE NEW INTERFACE */
-            this.id = this.db.getLastID(this.account); //db.getLastExpenseID(this.account);
-            ledger lastLed = ledDB.getLastLedgerByAccount(this.account);//db.getLastLedgerForAccount(this.account);
-            if (lastLed.accountID == -1) {
-                return false;
-            }
+            /* add the expense */
+            if (!controller.iE.insert(this)) { return false; }
+            /* assign expense id */
+            this.id = controller.iE.getLastID(this.account);
+            /* test if ledgers have to be updated */
+            ledger lastLed = controller.iL.getLastLedgerByAccount(this.account);
+            if (lastLed.accountID == -1) { return false; }
+            /* check if new expense is before prior expenses and update ledger accordingly */
             if (lastLed.postedDate > this.expenseDate) {
-                this.id = this.db.getLastID(this.account); //db.getLastExpenseID(this.account);
-                //MessageBox.Show("Expense date before last posted. Problem time...");
-                if (!ledDB.updateLedersBeforeTimeFrame(this)) { 
-                //if (!db.updateLedgersBeforeTimeFrame(this)) {
+                this.id = this.id = controller.iE.getLastID(this.account);
+                if (!controller.iL.updateLedersBeforeTimeFrame(this)) {
                     MessageBox.Show("An error occurred updating prior records.");
                     return false;
                 }
             } else {
                 ledger newLed = new ledger(lastLed.balanceAfter, (lastLed.balanceAfter + this.amount), this.id, -1, this.account, this.expenseDate);
-                if (!ledDB.insert(newLed)) { 
-                //if (!db.addLedger(newLed)) {
+                if (!controller.iL.insert(newLed)) {
                     return false;
                 }
             }

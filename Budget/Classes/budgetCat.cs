@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace budgetApp {
     class budgetCat {
-        // CREATE TABLE IF NOT EXISTS budget_Category (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT, postedDate TEXT)
         public string name { get; set; }
         public int id { get; set; }
         public DateTime postedDate { get; set; }

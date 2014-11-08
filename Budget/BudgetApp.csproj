@@ -72,6 +72,7 @@
     <Compile Include="Classes\expense.cs" />
     <Compile Include="Classes\Interfaces\controller.cs" />
     <Compile Include="Classes\Interfaces\iAccount.cs" />
+    <Compile Include="Classes\Interfaces\iAccountCat.cs" />
     <Compile Include="Classes\QueryBuilder\baseInterface.cs" />
     <Compile Include="Classes\Interfaces\iExpense.cs" />
     <Compile Include="Classes\Interfaces\iLedger.cs" />
@@ -161,6 +162,18 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Queries\getAccountCategoryByID - Copy.sqlite">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Queries\getAccountCategoryID.sqlite">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Queries\getPayees.sqlite">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Queries\insertAccount.sqlite">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Queries\getAccountID.sqlite">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

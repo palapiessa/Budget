@@ -1,0 +1,3 @@
+﻿[[@name TEXT,@primaryCat INT,@interest REAL,@balance REAL,@userName TEXT,@postedDate DATETIME]]
+
+INSERT INTO accounts (name, primaryCat, interest, balance, userName, postedDate) VALUES (@name, @primaryCat, @interest, @balance, @userName, @postedDate)

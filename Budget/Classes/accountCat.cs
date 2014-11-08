@@ -6,11 +6,16 @@ using System.Threading.Tasks;
 
 namespace budgetApp {
     class accountCat {
-        // CREATE TABLE IF NOT EXISTS account_Category (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT, postedDate TEXT)
-        public int id { get; set; }
-        public string name { get; set; }
-        public DateTime postedDate { get; set; }
+        #region Initialization
+        private int _id;
+        private string _name;
+        private DateTime _postedDate;
+        public int id { get { return _id; } set { _id = value ;} }
+        public string name { get { return _name; } set { _name = value; } }
+        public DateTime postedDate { get { return _postedDate; } set { _postedDate = value; } }
+        #endregion
 
+        #region Constructors
         public accountCat() {
             this.id = -1;
             this.name = "";
@@ -32,5 +37,12 @@ namespace budgetApp {
             this.name = name;
             this.postedDate = DateTime.Now;
         }
+
+        public accountCat( responseRow row ) {
+            this.id = Convert.ToInt32(row.getColumnValue("id"));
+            this.name = row.getColumnValue("name");
+            this.postedDate = Convert.ToDateTime(row.getColumnValue("postedDate"));
+        }
+        #endregion
     }
 }

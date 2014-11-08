@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using budgetApp.Classes.Interfaces;
 
 namespace budgetApp {
     public partial class frmAddAccount : Form {
@@ -16,60 +17,15 @@ namespace budgetApp {
             InitializeComponent();
             this.db.createDatabase();
         }
-        /* clean the form data, ensure proper fields are entered, display errors where found
-         * attempt to add the account to the database
-         */
-        private bool addAccount() {
-            if (this.addAccountCat) {
-                updateStatus("Update account category", true);
-                return false;
-            }
-            account newAccount = new account();
-            try {
-                if (txtAccount.Text != "") {
-                    newAccount.name = txtAccount.Text;
-                } else {
-                    updateStatus("Please enter account name.", true);
-                    return false;
-                }
-                if (cmbCategories.Text != "") {
-                    newAccount.primaryCategory = this.db.getAccountCatID(cmbCategories.Text);
-                    if (newAccount.primaryCategory == -1) {
-                        updateStatus("Error with category.", true);
-                        return false;
-                    }
-                } else {
-                    updateStatus("Please select a category.", true);
-                    return false;
-                }
-                if (txtUser.Text != "") {
-                    newAccount.userName = txtUser.Text;
-                } else {
-                    updateStatus("Please enter a user name.", true);
-                    return false;
-                }
-                newAccount.interest = Convert.ToDouble(nudInterest.Value);
-                newAccount.balance = Convert.ToDouble(nudBalance.Value);
-                if (!newAccount.add(this.db)) {
-                    updateStatus("Error adding to database.", true);
-                    return false;
-                } else {
-                    return true;
-                }
-            } catch (Exception e) {
-                /* do something with exception */
-                updateStatus("An error occurred.", true);
-                MessageBox.Show(e.ToString());
-                return false;
-            }
-            //MessageBox.Show(newAccount.interest.ToString());
-        }
-        /* update the status label */
+
+        #region Form Controls
         public void updateStatus( string message, bool error ) {
             lblStatus.ForeColor = (error) ? System.Drawing.Color.DarkRed : System.Drawing.Color.LimeGreen;
             lblStatus.Text = message;
         }
-        /* load the combo box with categories */
+        /// <summary>
+        /// Loads the combo box for the categories
+        /// </summary>
         private void loadComboCats() {
             List<string> cats = new List<string>();
             cats = this.db.getAccountCategories();
@@ -115,6 +71,66 @@ namespace budgetApp {
                 nudInterest.Enabled = true;
             }
         }
+        #endregion
+
+        #region Methods
+        /* clean the form data, ensure proper fields are entered, display errors where found
+         * attempt to add the account to the database
+         */
+        private bool addAccount() {
+            if (this.addAccountCat) {
+                updateStatus("Update account category", true);
+                return false;
+            }
+            account newAccount = new account();
+            try {
+                if (txtAccount.Text != "") {
+                    newAccount.name = txtAccount.Text;
+                } else {
+                    updateStatus("Please enter account name.", true);
+                    return false;
+                }
+                if (cmbCategories.Text != "") {
+                    newAccount.primaryCategory = this.db.getAccountCatID(cmbCategories.Text);
+                    if (newAccount.primaryCategory == -1) {
+                        updateStatus("Error with category.", true);
+                        return false;
+                    }
+                } else {
+                    updateStatus("Please select a category.", true);
+                    return false;
+                }
+                if (txtUser.Text != "") {
+                    newAccount.userName = txtUser.Text;
+                } else {
+                    updateStatus("Please enter a user name.", true);
+                    return false;
+                }
+                newAccount.interest = Convert.ToDouble(nudInterest.Value);
+                newAccount.balance = Convert.ToDouble(nudBalance.Value);
+                if (!controller.iA.insert(newAccount)) {
+                    updateStatus("Error adding to database.", true);
+                    return false;
+                } else {
+                    return true;
+                }
+                
+                //if (!newAccount.add(this.db)) {
+                //    updateStatus("Error adding to database.", true);
+                //    return false;
+                //} else {
+                //    return true;
+                //}
+            } catch (Exception e) {
+                /* do something with exception */
+                updateStatus("An error occurred.", true);
+                MessageBox.Show(e.ToString());
+                return false;
+            }
+            //MessageBox.Show(newAccount.interest.ToString());
+        }
+        /* update the status label */
+
         /* process the entered return */
         public void catchReturn() {
             if (addAccount()) {
@@ -122,7 +138,9 @@ namespace budgetApp {
                 clearForm();
             }
         }
-        /* event handlers */
+        #endregion
+
+        #region Event Handlers
         private void btnAdd_Click( object sender, EventArgs e ) {
             catchReturn();
         }
@@ -160,5 +178,6 @@ namespace budgetApp {
                 catchReturn();
             }
         }
+        #endregion
     }
 }

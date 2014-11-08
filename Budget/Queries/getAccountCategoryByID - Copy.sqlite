@@ -1,0 +1,3 @@
+﻿[[@ID INT]]
+
+SELECT [id],[name],[primaryCat],[postedDate] FROM account_Category WHERE id = @id

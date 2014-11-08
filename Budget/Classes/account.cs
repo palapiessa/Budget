@@ -4,18 +4,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using budgetApp.Classes.Interfaces;
 
 namespace budgetApp {
     class account {
-        // CREATE TABLE IF NOT EXISTS accounts (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT, balance REAL, interest REAL, primaryCat INTEGER, postedDate TEXT, userName TEXT)
-        public string name { get; set; }
-        public int id { get; set; }
-        public int primaryCategory { get; set; }
-        public double interest { get; set; }
-        public double balance { get; set; }
-        public string userName { get; set; }
-        public DateTime postedDate { get; set; }
+        #region Initialization
+        private string _name;
+        private int _id;
+        private int _primaryCategory;
+        private double _interest;
+        private double _balance;
+        private string _userName;
+        private DateTime _postedDate; public string name { get { return _name; } set { _name = value; } }
+        public int id { get { return _id; } set { _id = value; } }
+        public int primaryCategory { get { return _primaryCategory; } set { _primaryCategory = value; } }
+        public double interest { get { return _interest; } set { _interest = value; } }
+        public double balance { get { return _balance; } set { _balance = value; } }
+        public string userName { get { return _userName; } set { _userName = value; } }
+        public DateTime postedDate { get { return _postedDate; } set { _postedDate = value; } }
+        #endregion
 
+        #region Constructors
         public account() {
             this.name = "";
             this.primaryCategory = -1;
@@ -42,26 +51,25 @@ namespace budgetApp {
             this.primaryCategory = Convert.ToInt32(row.getColumnValue("primaryCat"));
             this.interest = Convert.ToDouble(row.getColumnValue("interest"));
             this.balance = Convert.ToDouble(row.getColumnValue("balance"));
-            this.userName = row.getColumnValue("userName");
+            this.userName = row.getColumnValue("userName"); 
         }
+        #endregion
 
+        #region Methods
         /* add the account to the database */
-        public bool add(sqliteInterface db) {
-            if (!db.addAccount(this)) {
-                /* alert error */
-                return false;
-            }
+        public bool add() {
+            if (!controller.iA.insert(this)) { return false; }
+
             try {
                 /* TODO - FIX postedDate */
-                ledger newledger = new ledger(0, this.balance, -1, -1, db.getAccountID(this.name), Convert.ToDateTime("2014-01-01 00:00:01"));
-                if (!db.addLedger(newledger)) {
-                    return false;
-                }
+                ledger newledger = new ledger(0, this.balance, -1, -1, controller.iA.getID(this.name), Convert.ToDateTime("2014-01-01 00:00:01"));
+                if (!controller.iL.insert(newledger)) { return false; }
             } catch (Exception e) {
                 MessageBox.Show("An error occured.\n" + e.ToString());
                 return false;
             }
             return true;
         }
+        #endregion
     }
 }

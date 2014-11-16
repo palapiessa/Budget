@@ -1,0 +1,3 @@
+[[@ID]]
+
+SELECT [id], [name], [budgetCat], [dueDate], [postedDate], [userName], [password], [timeframe], [estimateAmount] FROM bills WHERE id = @ID

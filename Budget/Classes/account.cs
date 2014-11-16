@@ -16,6 +16,7 @@ namespace budgetApp {
         private double _balance;
         private string _userName;
         private DateTime _postedDate; public string name { get { return _name; } set { _name = value; } }
+        // exposing functions
         public int id { get { return _id; } set { _id = value; } }
         public int primaryCategory { get { return _primaryCategory; } set { _primaryCategory = value; } }
         public double interest { get { return _interest; } set { _interest = value; } }
